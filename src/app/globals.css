@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.langDropDown {
+  left: -40px !important;
+  top: 13px !important;
+}
+
+body {
+  background-color: #f5f6fa;
+  display: grid;
+}
+
+[class="dark"] body {
+  background-color: #141414;
+}
+
+[class="dark"] body .card {
+  background-color: #0D0D0D;
+  color: white ;
+  transition: 300ms;
+  
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 25px 0;
+  user-select: none;
+}
+
+.pagination li {
+  margin: 8px !important;
+  border: 1px solid rgb(221, 218, 218);
+  border-radius: 5px;
+}
+
+.pagination li:hover {
+  opacity: 0.8;
+}
+
+.pagination li a {
+  padding: 7px 14px !important;
+  display: block !important;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+
+
+.pagination li.active {
+  background-color: #3E5AF0 !important;
+  color: white;
+}

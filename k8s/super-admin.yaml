@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superadmin-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superadmin
+  template:
+    metadata:
+      labels:
+        app: superadmin
+    spec:
+      containers:
+      - name: superadmin
+        image: medanyyy/superadmin:v1
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "http://57.152.16.89:8092" # Set the backend API URL here
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: superadmin-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: superadmin
