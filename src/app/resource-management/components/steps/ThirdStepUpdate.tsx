@@ -14,6 +14,7 @@ import {
   useGetLessonFilesQuery,
   useUpdateLessonMutation,
   useUpdateTopicFileMutation,
+  useUploadLessonFilesMutation,
 } from "@/app/resource-management/api/getCoursesSlice";
 import { useAddLessonMutation } from "@/app/create-course/api/createCourseSlice";
 import AddTopic from "./AddTopic";
@@ -34,7 +35,6 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
 
   const token = Cookies.get("token") || "";
   const params = useParams();
-  // console.log("params: ", params);
   const [isOpen, setIsOpen] = useState(false);
 
   const openPopup = () => setIsOpen(true);
@@ -60,21 +60,15 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
 
   const { data: dataLesson, refetch: refetchGetAllLessons } =
     useGetAllLessonsQuery({ token, id: params.id });
-  // console.log("dataLesson: ", dataLesson);
   const topicsWithId = dataLesson?.data?.content[0]?.topics;
   console.log("topicsWithId", topicsWithId);
   const idLesson = dataLesson?.data?.content[0]?.lessonId;
-  // console.log('idLesson', idLesson);
-
-  // console.log('idTopic', idTopic)
   const { data: dataLessonUpdate, refetch: refetchGetLesson } =
     useGetLeassonQuery({ token, id: idLesson });
-  // console.log('dataLessonUpdate: ', dataLessonUpdate);
   const { data: dataLessonFiles } = useGetLessonFilesQuery({
     token,
     id: params.id,
   });
-  // console.log('dataLessonFiles: ', dataLessonFiles);
   const refetch = () => {
     refetchGetAllLessons();
     refetchGetLesson();
@@ -90,12 +84,10 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
     setAllTopics(dataLessonUpdate?.data?.topics || []);
   }, [dataLessonUpdate]);
 
-  // console.log('alltopics', allTopics);
   const [addLesson, { data, error, isError, isSuccess }] =
     useAddLessonMutation();
 
   const [updateLesson, { data: dataUpdate }] = useUpdateLessonMutation();
-  // console.log('dataUpdate: ', dataUpdate)
 
   const [updateTopicFile, { data: dataTopicFile }] =
     useUpdateTopicFileMutation();
@@ -106,8 +98,6 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
     const ids = topicsWithId?.map((topic: any) => topic.topicId) || [];
     setTopicIds(ids);
   }, [topicsWithId]);
-
-  console.log("topicIds: ", topicIds);
 
   useEffect(() => {
     if (topicIds.length > 0) {
@@ -122,8 +112,6 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
     }
   }, [topicIds, allTopics]);
 
-  console.log("topicsToSend:", topicsToSend);
-
   const handleSend = async () => {
     const dataUpdated = {
       name_en: lessonNameEn || "name (en)",
@@ -136,7 +124,6 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
     };
 
     refetchGetAllLessons();
-    console.log("dataUpdated: ", dataUpdated);
     try {
       await updateLesson({ token, data: dataUpdated, id: idLesson }).unwrap();
       toast.success("Lesson updated successfully");
@@ -252,6 +239,65 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
     }
   }, [isSuccess, router]);
 
+  // Add "Many" Files
+
+  const [isModalOpenMany, setIsModalOpenMany] = useState(false);
+  const [filesMany, setFilesMany] = useState<any[]>([]);
+  const [
+    uploadLessonFiles,
+    { data: dataUpload, isLoading, error: errorUpload },
+  ] = useUploadLessonFilesMutation();
+
+  const handleFileChangeMany = (e: any) => {
+    const selectedFilesMany = e.target.files;
+    const fileArrayMany = Array.from(selectedFilesMany);
+    setFilesMany(fileArrayMany);
+  };
+
+  const openModalMany = () => {
+    setIsModalOpenMany(true);
+  };
+
+  const closeModalMany = () => {
+    setIsModalOpenMany(false);
+  };
+
+  const handleSubmitMany = async () => {
+    if (filesMany.length > 0) {
+      // Calculate total size in MB
+      const totalSizeMB = filesMany.reduce((total, file) => total + file.size, 0) / (1024 * 1024);
+  
+      // Check if total size exceeds 50MB
+      if (totalSizeMB > 50) {
+        toast.error('Total file size exceeds 50 MB. Please select smaller files.');
+        return; // Stop further execution
+      }
+  
+      try {
+        const formData = new FormData();
+  
+        // Append each file under the same key "files"
+        filesMany.forEach((file) => {
+          formData.append('files', file);
+        });
+  
+        console.log("👾 ~ filesMany.forEach ~ filesMany:", filesMany);
+  
+        // Make the API call to upload files
+        await uploadLessonFiles({ token, data: formData, lessonId: idLesson }).unwrap();
+        console.log("👾 ~ handleSubmitMany ~ idLesson:", idLesson);
+        toast.success('Files uploaded successfully');
+        refetchGetAllLessons(); // Refetch lessons after upload
+        closeModalMany(); // Close modal
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        toast.error('Failed to upload files');
+      }
+    } else {
+      toast.info('Please select files to upload');
+    }
+  };
+  
   return (
     <div className="bg-white card p-3 shadow-md rounded-md">
       <div>
@@ -437,7 +483,6 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
                     placeholder="Enter lesson name"
                     value={topic.name_en || ""}
                     onChange={(e) =>
-                      //   updateTopic(index, "name_en", e.target.value)
                       updateTopic(index, "name_en", e.target.value)
                     }
                     required
@@ -558,41 +603,150 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
             )}
           </div>
         ))}
-        <button
-          onClick={openPopup}
-          className="flex items-center my-5 hover:opacity-80"
-        >
-          <svg
-            width="20"
-            height="21"
-            viewBox="0 0 20 21"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        <div className="flex justify-between">
+          <button
+            onClick={openPopup}
+            className="flex items-center my-5 hover:opacity-80"
           >
-            <g clipPath="url(#clip0_2511_2483)">
-              <path
-                d="M8.75065 17.1666C8.75065 17.4981 8.88235 17.816 9.11677 18.0505C9.35119 18.2849 9.66913 18.4166 10.0007 18.4166C10.3322 18.4166 10.6501 18.2849 10.8845 18.0505C11.119 17.816 11.2507 17.4981 11.2507 17.1666V11.7499H16.6673C16.9988 11.7499 17.3168 11.6182 17.5512 11.3838C17.7856 11.1494 17.9173 10.8314 17.9173 10.4999C17.9173 10.1684 17.7856 9.85046 17.5512 9.61603C17.3168 9.38161 16.9988 9.24992 16.6673 9.24992H11.2507V3.83325C11.2507 3.50173 11.119 3.18379 10.8845 2.94937C10.6501 2.71495 10.3322 2.58325 10.0007 2.58325C9.66913 2.58325 9.35119 2.71495 9.11677 2.94937C8.88235 3.18379 8.75065 3.50173 8.75065 3.83325V9.24992H3.33398C3.00246 9.24992 2.68452 9.38161 2.4501 9.61603C2.21568 9.85046 2.08398 10.1684 2.08398 10.4999C2.08398 10.8314 2.21568 11.1494 2.4501 11.3838C2.68452 11.6182 3.00246 11.7499 3.33398 11.7499H8.75065V17.1666Z"
-                fill="#526484"
+            <svg
+              width="20"
+              height="21"
+              viewBox="0 0 20 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clipPath="url(#clip0_2511_2483)">
+                <path
+                  d="M8.75065 17.1666C8.75065 17.4981 8.88235 17.816 9.11677 18.0505C9.35119 18.2849 9.66913 18.4166 10.0007 18.4166C10.3322 18.4166 10.6501 18.2849 10.8845 18.0505C11.119 17.816 11.2507 17.4981 11.2507 17.1666V11.7499H16.6673C16.9988 11.7499 17.3168 11.6182 17.5512 11.3838C17.7856 11.1494 17.9173 10.8314 17.9173 10.4999C17.9173 10.1684 17.7856 9.85046 17.5512 9.61603C17.3168 9.38161 16.9988 9.24992 16.6673 9.24992H11.2507V3.83325C11.2507 3.50173 11.119 3.18379 10.8845 2.94937C10.6501 2.71495 10.3322 2.58325 10.0007 2.58325C9.66913 2.58325 9.35119 2.71495 9.11677 2.94937C8.88235 3.18379 8.75065 3.50173 8.75065 3.83325V9.24992H3.33398C3.00246 9.24992 2.68452 9.38161 2.4501 9.61603C2.21568 9.85046 2.08398 10.1684 2.08398 10.4999C2.08398 10.8314 2.21568 11.1494 2.4501 11.3838C2.68452 11.6182 3.00246 11.7499 3.33398 11.7499H8.75065V17.1666Z"
+                  fill="#526484"
+                />
+              </g>
+              <rect
+                x="0.5"
+                y="1"
+                width="19"
+                height="19"
+                rx="4.5"
+                stroke="#526484"
               />
-            </g>
-            <rect
-              x="0.5"
-              y="1"
-              width="19"
-              height="19"
-              rx="4.5"
-              stroke="#526484"
-            />
-            <defs>
-              <clipPath id="clip0_2511_2483">
-                <rect y="0.5" width="20" height="20" rx="5" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-          <span className="block text-[#526484] md:text-lg font-medium  ms-3">
-            Add New Lesson
-          </span>
-        </button>
+              <defs>
+                <clipPath id="clip0_2511_2483">
+                  <rect y="0.5" width="20" height="20" rx="5" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span className="block text-[#526484] md:text-lg font-medium ms-3">
+              Add One Lesson
+            </span>
+          </button>
+          <button
+            onClick={openModalMany}
+            className="flex items-center my-5 hover:opacity-80"
+          >
+            <svg
+              width="20"
+              height="21"
+              viewBox="0 0 20 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clipPath="url(#clip0_2511_2483)">
+                <path
+                  d="M8.75065 17.1666C8.75065 17.4981 8.88235 17.816 9.11677 18.0505C9.35119 18.2849 9.66913 18.4166 10.0007 18.4166C10.3322 18.4166 10.6501 18.2849 10.8845 18.0505C11.119 17.816 11.2507 17.4981 11.2507 17.1666V11.7499H16.6673C16.9988 11.7499 17.3168 11.6182 17.5512 11.3838C17.7856 11.1494 17.9173 10.8314 17.9173 10.4999C17.9173 10.1684 17.7856 9.85046 17.5512 9.61603C17.3168 9.38161 16.9988 9.24992 16.6673 9.24992H11.2507V3.83325C11.2507 3.50173 11.119 3.18379 10.8845 2.94937C10.6501 2.71495 10.3322 2.58325 10.0007 2.58325C9.66913 2.58325 9.35119 2.71495 9.11677 2.94937C8.88235 3.18379 8.75065 3.50173 8.75065 3.83325V9.24992H3.33398C3.00246 9.24992 2.68452 9.38161 2.4501 9.61603C2.21568 9.85046 2.08398 10.1684 2.08398 10.4999C2.08398 10.8314 2.21568 11.1494 2.4501 11.3838C2.68452 11.6182 3.00246 11.7499 3.33398 11.7499H8.75065V17.1666Z"
+                  fill="#526484"
+                />
+              </g>
+              <rect
+                x="0.5"
+                y="1"
+                width="19"
+                height="19"
+                rx="4.5"
+                stroke="#526484"
+              />
+              <defs>
+                <clipPath id="clip0_2511_2483">
+                  <rect y="0.5" width="20" height="20" rx="5" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+            <span className="block text-[#526484] md:text-lg font-medium ms-3">
+              Add Many Lessons
+            </span>
+          </button>
+
+          {isModalOpenMany && (
+            <div
+              className="fixed top-0 left-0 z-[1000] w-full h-full bg-gray-500 bg-opacity-50"
+              onClick={closeModalMany}
+            >
+              <div
+                className="bg-white p-6 rounded-lg w-1/2 mx-auto mt-20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 className="text-xl font-semibold mb-4">Upload Files</h2>
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChangeMany}
+                  className="mb-4"
+                />
+                <div>
+                  {filesMany.length > 0 ? (
+                    <div>
+                      {/* Display total size */}
+                      <p className="text-sm font-semibold text-gray-700 mb-2">
+                        Total size:{" "}
+                        {(
+                          filesMany.reduce(
+                            (total, file) => total + file.size,
+                            0
+                          ) /
+                          (1024 * 1024)
+                        ).toFixed(2)}{" "}
+                        MB
+                      </p>
+
+                      {/* Display file list */}
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                        {filesMany.map((file, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100 px-4 py-2"
+                          >
+                            <p className="truncate" title={file.name}>
+                              {index + 1}- {file.name}
+                            </p>
+                            <p className="truncate">
+                              ({(file.size / 1024).toFixed(2)} KB)
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p>No files selected.</p>
+                  )}
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    className="bg-gray-200 hover:bg-gray-300 w-fit text-black px-4 py-2 rounded-lg mr-2"
+                    onClick={closeModalMany}
+                  >
+                    Close
+                  </button>
+
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    onClick={handleSubmitMany}
+                  >
+                    Upload
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="my-4 flex justify-end">
         <button

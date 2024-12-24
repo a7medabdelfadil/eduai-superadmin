@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "../../api/axios"
 
-
 export const courseSlice = createApi({
     reducerPath: "courseAndCountry",
     baseQuery: fetchBaseQuery({

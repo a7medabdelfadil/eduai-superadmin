@@ -4,39 +4,53 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import usaLogo from "../../public/images/usa.png"
-import arabicFlag from "../../public/images/arabicFlag.png"
-import frenchLogo from "../../public/images/Flag-France.webp"
+import usaLogo from "../../public/images/usa.png";
+import arabicFlag from "../../public/images/arabicFlag.png";
+import frenchLogo from "../../public/images/Flag-France.webp";
 import { Dropdown, ToggleSwitch } from "flowbite-react";
-import Cookies from "js-cookie"
-import { StaticImageData } from 'next/image';
+import Cookies from "js-cookie";
+import { StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setThemeRedux } from "@/app/GlobalRedux/ThemeSlice";
-import { useGetProfileQuery } from "./api/profileApi";
+import { useGetProfileQuery, useGetProfileWithIdQuery } from "./api/profileApi";
 import { RootState } from "@/app/GlobalRedux/store";
 import { login, logout } from "@/app/GlobalRedux/AuthSlice";
 import { closeSideBar, openSideBar } from "@/app/GlobalRedux/SidebarSlice";
+import { useNotificationsWebSocket } from "@/hooks/useNofifications";
 
 const NavBar = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-  const isSideBarOpen = useSelector((state: RootState) => state.sidebar.isSideBarOpen);
-  console.log('isSideBarOpen: ', isSideBarOpen);
+  const isSideBarOpen = useSelector(
+    (state: RootState) => state.sidebar.isSideBarOpen
+  );
+  console.log("isSideBarOpen: ", isSideBarOpen);
 
-  const token = Cookies.get('token') || ""
-  const [pathname, setPathname] = useState('');
+  const token = Cookies.get("token") || "";
+  const [pathname, setPathname] = useState("");
   const [isLoginPage, setIsLoginPage] = useState(true);
   const [small, setSmall] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [profile, setProfile] = useState(false);
-  const languageFromCookies = Cookies.get('lang') || "";
-  const [lang, setLang] = useState(languageFromCookies && languageFromCookies !== "" ? languageFromCookies : "english")
-  const [langFlag, setLangFlag] = useState<StaticImageData | undefined>(undefined);
+  const languageFromCookies = Cookies.get("lang") || "";
+  const [lang, setLang] = useState(
+    languageFromCookies && languageFromCookies !== ""
+      ? languageFromCookies
+      : "english"
+  );
+  const [langFlag, setLangFlag] = useState<StaticImageData | undefined>(
+    undefined
+  );
 
-  const router = useRouter()
+  const { data: profileData } = useGetProfileQuery(token);
+  const { data: profileDataWithId } = useGetProfileWithIdQuery(token);
+  const { notificationsCount, isConnected } = useNotificationsWebSocket(
+    profileDataWithId?.data?.id
+  );
+  // console.log("👾 ~ NavBar ~ profileDataWithId:", profileDataWithId?.data?.id)
 
-  const { data: profileData } = useGetProfileQuery(token)
+  const router = useRouter();
 
   useEffect(() => {
     if (!languageFromCookies || languageFromCookies === "") {
@@ -49,54 +63,60 @@ const NavBar = () => {
 
   useEffect(() => {
     if (lang === "english") {
-      setLangFlag(usaLogo)
+      setLangFlag(usaLogo);
     } else if (lang === "arabic") {
-      setLangFlag(arabicFlag)
+      setLangFlag(arabicFlag);
     } else {
-      setLangFlag(frenchLogo)
+      setLangFlag(frenchLogo);
     }
     if (lang) {
       Cookies.set("lang", lang);
     }
-    router.refresh()
-  }, [lang, router])
-
+    router.refresh();
+  }, [lang, router]);
 
   const toggleProfile = () => {
-    setProfile(!profile)
-  }
+    setProfile(!profile);
+  };
 
   const toggleNavbarSmall = () => {
-    setSmall(!small)
+    setSmall(!small);
     if (isSideBarOpen) {
-      dispatch(closeSideBar()) 
+      dispatch(closeSideBar());
     } else {
       dispatch(openSideBar());
     }
-  }
+  };
 
   useEffect(() => {
     setPathname(window.location.pathname);
-
   }, [pathname]);
 
   useEffect(() => {
-    if (pathname === '/login' || pathname === '/forget-password' || pathname === '/reset-password' || pathname === '/otp') {
-      dispatch(logout());  
+    if (
+      pathname === "/login" ||
+      pathname === "/forget-password" ||
+      pathname === "/reset-password" ||
+      pathname === "/otp"
+    ) {
+      dispatch(logout());
     } else {
-      dispatch(login());     
+      dispatch(login());
     }
   }, [pathname]);
 
-
   const OpenSideBar = () => {
-    setIsOpen(!isOpen)
-    dispatch(openSideBar());  
-  }
+    setIsOpen(!isOpen);
+    dispatch(openSideBar());
+  };
 
   const useWindowDimensions = () => {
-    const isClient = typeof window === 'object'; // Ensure code runs only in the client-side environment
-    const [windowSize, setWindowSize] = useState(isClient ? { width: window.innerWidth, height: window.innerHeight } : { width: undefined, height: undefined });
+    const isClient = typeof window === "object"; // Ensure code runs only in the client-side environment
+    const [windowSize, setWindowSize] = useState(
+      isClient
+        ? { width: window.innerWidth, height: window.innerHeight }
+        : { width: undefined, height: undefined }
+    );
 
     useEffect(() => {
       if (!isClient) {
@@ -107,10 +127,10 @@ const NavBar = () => {
         setWindowSize({ width: window.innerWidth, height: window.innerHeight });
       };
 
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
       handleResize(); // Set initial dimensions
 
-      return () => window.removeEventListener('resize', handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }, [isClient]);
 
     return windowSize;
@@ -128,41 +148,40 @@ const NavBar = () => {
 
   const handleDark = () => {
     if (dark) {
-      setDark(false)
-      Cookies.set("mode", "light")
-      dispatch(setThemeRedux(false))
+      setDark(false);
+      Cookies.set("mode", "light");
+      dispatch(setThemeRedux(false));
     } else {
-      setDark(true)
-      Cookies.set("mode", "dark")
-      dispatch(setThemeRedux(true))
+      setDark(true);
+      Cookies.set("mode", "dark");
+      dispatch(setThemeRedux(true));
     }
-    router.refresh()
-  }
+    router.refresh();
+  };
 
   const handleLogout = () => {
-    Cookies.remove("token")
-    toggleProfile()
-    router.push("/login")
+    Cookies.remove("token");
+    toggleProfile();
+    router.push("/login");
     dispatch(logout());
-  }
+  };
 
-  const mode = Cookies.get("mode")
+  const mode = Cookies.get("mode");
 
   useEffect(() => {
     if (mode === "light") {
-      setDark(false)
-      dispatch(setThemeRedux(false))
+      setDark(false);
+      dispatch(setThemeRedux(false));
     } else {
-      setDark(true)
-      dispatch(setThemeRedux(true))
+      setDark(true);
+      dispatch(setThemeRedux(true));
     }
-  }, [])
-
+  }, []);
 
   const links = [
     {
       id: 1,
-      name: 'Dashboard',
+      name: "Dashboard",
       icon: (
         <svg
           className="h-6 w-6 font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
@@ -178,11 +197,11 @@ const NavBar = () => {
           />
         </svg>
       ),
-      href: '/',
+      href: "/",
     },
     {
       id: 2,
-      name: 'Manage School',
+      name: "Manage School",
       icon: (
         <svg
           className="h-6 w-6 font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
@@ -206,11 +225,11 @@ const NavBar = () => {
           <line x1="16" y1="14" x2="16" y2="17" />
         </svg>
       ),
-      href: '/manage-school',
+      href: "/manage-school",
     },
     {
       id: 3,
-      name: 'School Plans',
+      name: "School Plans",
       icon: (
         <svg
           className="h-6 w-6 font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
@@ -234,49 +253,104 @@ const NavBar = () => {
           <line x1="16" y1="14" x2="16" y2="17" />
         </svg>
       ),
-      href: '/school-plans',
+      href: "/school-plans",
     },
     {
       id: 4,
-      name: 'Education System',
+      name: "Education System",
       icon: (
-        <svg stroke="currentColor" className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <svg
+          stroke="currentColor"
+          className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
           <g clipPath="url(#clip0_8345_44606)">
-            <path fillRule="evenodd" clipRule="evenodd" d="M11.063 2.46913C11.309 2.27238 11.6108 2.15809 11.9254 2.14247C12.2401 2.12685 12.5517 2.2107 12.816 2.38213L12.937 2.46913L17.249 5.91913C17.4594 6.08728 17.6336 6.29618 17.7613 6.53332C17.889 6.77045 17.9675 7.03093 17.992 7.29913L18 7.48013V10.0001H20C20.5046 9.99997 20.9906 10.1905 21.3605 10.5336C21.7305 10.8767 21.9572 11.347 21.995 11.8501L22 12.0001V19.9001C22.0001 20.1712 21.9002 20.4328 21.7193 20.6346C21.5385 20.8365 21.2894 20.9646 21.02 20.9941L20.9 21.0001H3.1C2.82894 21.0003 2.56738 20.9003 2.36548 20.7195C2.16358 20.5386 2.03557 20.2896 2.006 20.0201L2 19.9001V12.0001C1.99984 11.4956 2.19041 11.0096 2.5335 10.6396C2.87659 10.2696 3.34684 10.043 3.85 10.0051L4 10.0001H6V7.48013C5.99998 7.21081 6.05436 6.94427 6.15987 6.69648C6.26537 6.44869 6.41984 6.22476 6.614 6.03813L6.751 5.91813L11.063 2.46913ZM12 4.28013L8 7.48013V19.0001H16V7.48013L12 4.28013ZM20 12.0001H18V19.0001H20V12.0001ZM6 12.0001H4V19.0001H6V12.0001ZM12 8.00013C12.394 8.00013 12.7841 8.07772 13.1481 8.22849C13.512 8.37925 13.8427 8.60023 14.1213 8.87881C14.3999 9.15738 14.6209 9.4881 14.7716 9.85208C14.9224 10.2161 15 10.6062 15 11.0001C15 11.3941 14.9224 11.7842 14.7716 12.1482C14.6209 12.5122 14.3999 12.8429 14.1213 13.1214C13.8427 13.4 13.512 13.621 13.1481 13.7718C12.7841 13.9225 12.394 14.0001 12 14.0001C11.2044 14.0001 10.4413 13.6841 9.87868 13.1214C9.31607 12.5588 9 11.7958 9 11.0001C9 10.2045 9.31607 9.44142 9.87868 8.87881C10.4413 8.3162 11.2044 8.00013 12 8.00013ZM12 10.0001C11.7348 10.0001 11.4804 10.1055 11.2929 10.293C11.1054 10.4806 11 10.7349 11 11.0001C11 11.2653 11.1054 11.5197 11.2929 11.7072C11.4804 11.8948 11.7348 12.0001 12 12.0001C12.2652 12.0001 12.5196 11.8948 12.7071 11.7072C12.8946 11.5197 13 11.2653 13 11.0001C13 10.7349 12.8946 10.4806 12.7071 10.293C12.5196 10.1055 12.2652 10.0001 12 10.0001Z" fill="#09244B" />
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M11.063 2.46913C11.309 2.27238 11.6108 2.15809 11.9254 2.14247C12.2401 2.12685 12.5517 2.2107 12.816 2.38213L12.937 2.46913L17.249 5.91913C17.4594 6.08728 17.6336 6.29618 17.7613 6.53332C17.889 6.77045 17.9675 7.03093 17.992 7.29913L18 7.48013V10.0001H20C20.5046 9.99997 20.9906 10.1905 21.3605 10.5336C21.7305 10.8767 21.9572 11.347 21.995 11.8501L22 12.0001V19.9001C22.0001 20.1712 21.9002 20.4328 21.7193 20.6346C21.5385 20.8365 21.2894 20.9646 21.02 20.9941L20.9 21.0001H3.1C2.82894 21.0003 2.56738 20.9003 2.36548 20.7195C2.16358 20.5386 2.03557 20.2896 2.006 20.0201L2 19.9001V12.0001C1.99984 11.4956 2.19041 11.0096 2.5335 10.6396C2.87659 10.2696 3.34684 10.043 3.85 10.0051L4 10.0001H6V7.48013C5.99998 7.21081 6.05436 6.94427 6.15987 6.69648C6.26537 6.44869 6.41984 6.22476 6.614 6.03813L6.751 5.91813L11.063 2.46913ZM12 4.28013L8 7.48013V19.0001H16V7.48013L12 4.28013ZM20 12.0001H18V19.0001H20V12.0001ZM6 12.0001H4V19.0001H6V12.0001ZM12 8.00013C12.394 8.00013 12.7841 8.07772 13.1481 8.22849C13.512 8.37925 13.8427 8.60023 14.1213 8.87881C14.3999 9.15738 14.6209 9.4881 14.7716 9.85208C14.9224 10.2161 15 10.6062 15 11.0001C15 11.3941 14.9224 11.7842 14.7716 12.1482C14.6209 12.5122 14.3999 12.8429 14.1213 13.1214C13.8427 13.4 13.512 13.621 13.1481 13.7718C12.7841 13.9225 12.394 14.0001 12 14.0001C11.2044 14.0001 10.4413 13.6841 9.87868 13.1214C9.31607 12.5588 9 11.7958 9 11.0001C9 10.2045 9.31607 9.44142 9.87868 8.87881C10.4413 8.3162 11.2044 8.00013 12 8.00013ZM12 10.0001C11.7348 10.0001 11.4804 10.1055 11.2929 10.293C11.1054 10.4806 11 10.7349 11 11.0001C11 11.2653 11.1054 11.5197 11.2929 11.7072C11.4804 11.8948 11.7348 12.0001 12 12.0001C12.2652 12.0001 12.5196 11.8948 12.7071 11.7072C12.8946 11.5197 13 11.2653 13 11.0001C13 10.7349 12.8946 10.4806 12.7071 10.293C12.5196 10.1055 12.2652 10.0001 12 10.0001Z"
+              fill="#09244B"
+            />
           </g>
         </svg>
       ),
-      href: '/education-system',
+      href: "/education-system",
     },
     {
       id: 5,
-      name: 'Backups',
+      name: "Backups",
       icon: (
-        <svg className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z" />  <path d="M7 18a4.6 4.4 0 0 1 0 -9h0a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" />  <polyline points="9 15 12 12 15 15" />  <line x1="12" y1="12" x2="12" y2="21" /></svg>
-
+        <svg
+          className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          strokeWidth="2"
+          stroke="currentColor"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {" "}
+          <path stroke="none" d="M0 0h24v24H0z" />{" "}
+          <path d="M7 18a4.6 4.4 0 0 1 0 -9h0a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1" />{" "}
+          <polyline points="9 15 12 12 15 15" />{" "}
+          <line x1="12" y1="12" x2="12" y2="21" />
+        </svg>
       ),
-      href: '/backups',
+      href: "/backups",
     },
     {
       id: 6,
-      name: 'Updates',
+      name: "Updates",
       icon: (
-        <svg className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z" />  <polyline points="12 4 4 8 12 12 20 8 12 4" />  <polyline points="4 12 12 16 20 12" />  <polyline points="4 16 12 20 20 16" /></svg>
-
+        <svg
+          className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          strokeWidth="2"
+          stroke="currentColor"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {" "}
+          <path stroke="none" d="M0 0h24v24H0z" />{" "}
+          <polyline points="12 4 4 8 12 12 20 8 12 4" />{" "}
+          <polyline points="4 12 12 16 20 12" />{" "}
+          <polyline points="4 16 12 20 20 16" />
+        </svg>
       ),
-      href: '/updates',
+      href: "/updates",
     },
     {
       id: 7,
-      name: 'Feedback',
+      name: "Feedback",
       icon: (
-        <svg className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" /></svg>
+        <svg
+          className="h-6 w-6  font-bold font-sans text-[#526484] group-hover:text-[#3e5af0]"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+          />
+        </svg>
       ),
-      href: '/feedback',
+      href: "/feedback",
     },
     {
       id: 8,
-      name: 'Resource Management',
+      name: "Resource Management",
       icon: (
         <svg
           className="h-6 w-6  text-[#526484] group-hover:text-[#3e5af0] transition-colors duration-300"
@@ -292,15 +366,23 @@ const NavBar = () => {
           />
         </svg>
       ),
-      href: '/resource-management',
+      href: "/resource-management",
     },
     {
       id: 9,
-      name: 'Curriculum Management',
+      name: "Curriculum Management",
       icon: (
-        <svg className="text-[#526484] group-hover:text-[#3e5af0] h-6 w-6 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="text-[#526484] group-hover:text-[#3e5af0] h-6 w-6 "
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g clipPath="url(#clip0_2819_1715)">
-            <path d="M19 2C19.5304 2 20.0391 2.21071 20.4142 2.58579C20.7893 2.96086 21 3.46957 21 4V16C21 16.5304 20.7893 17.0391 20.4142 17.4142C20.0391 17.7893 19.5304 18 19 18H17V20C17 20.5304 16.7893 21.0391 16.4142 21.4142C16.0391 21.7893 15.5304 22 15 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H7V4C7 3.46957 7.21071 2.96086 7.58579 2.58579C7.96086 2.21071 8.46957 2 9 2H19ZM10 15H8C7.74512 15.0003 7.49997 15.0979 7.31463 15.2728C7.1293 15.4478 7.01777 15.687 7.00283 15.9414C6.98789 16.1958 7.07067 16.4464 7.23426 16.6418C7.39786 16.8373 7.6299 16.9629 7.883 16.993L8 17H10C10.2549 16.9997 10.5 16.9021 10.6854 16.7272C10.8707 16.5522 10.9822 16.313 10.9972 16.0586C11.0121 15.8042 10.9293 15.5536 10.7657 15.3582C10.6021 15.1627 10.3701 15.0371 10.117 15.007L10 15ZM19 4H9V6H15C15.5304 6 16.0391 6.21071 16.4142 6.58579C16.7893 6.96086 17 7.46957 17 8V16H19V4ZM12 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H12C12.2652 13 12.5196 12.8946 12.7071 12.7071C12.8946 12.5196 13 12.2652 13 12C13 11.7348 12.8946 11.4804 12.7071 11.2929C12.5196 11.1054 12.2652 11 12 11Z" fill="currentColor" />
+            <path
+              d="M19 2C19.5304 2 20.0391 2.21071 20.4142 2.58579C20.7893 2.96086 21 3.46957 21 4V16C21 16.5304 20.7893 17.0391 20.4142 17.4142C20.0391 17.7893 19.5304 18 19 18H17V20C17 20.5304 16.7893 21.0391 16.4142 21.4142C16.0391 21.7893 15.5304 22 15 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H7V4C7 3.46957 7.21071 2.96086 7.58579 2.58579C7.96086 2.21071 8.46957 2 9 2H19ZM10 15H8C7.74512 15.0003 7.49997 15.0979 7.31463 15.2728C7.1293 15.4478 7.01777 15.687 7.00283 15.9414C6.98789 16.1958 7.07067 16.4464 7.23426 16.6418C7.39786 16.8373 7.6299 16.9629 7.883 16.993L8 17H10C10.2549 16.9997 10.5 16.9021 10.6854 16.7272C10.8707 16.5522 10.9822 16.313 10.9972 16.0586C11.0121 15.8042 10.9293 15.5536 10.7657 15.3582C10.6021 15.1627 10.3701 15.0371 10.117 15.007L10 15ZM19 4H9V6H15C15.5304 6 16.0391 6.21071 16.4142 6.58579C16.7893 6.96086 17 7.46957 17 8V16H19V4ZM12 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H12C12.2652 13 12.5196 12.8946 12.7071 12.7071C12.8946 12.5196 13 12.2652 13 12C13 11.7348 12.8946 11.4804 12.7071 11.2929C12.5196 11.1054 12.2652 11 12 11Z"
+              fill="currentColor"
+            />
           </g>
           <defs>
             <clipPath id="clip0_2819_1715">
@@ -309,49 +391,100 @@ const NavBar = () => {
           </defs>
         </svg>
       ),
-      href: '/curriculum-management',
+      href: "/curriculum-management",
     },
   ];
 
-
   return (
     <>
-
       <header>
         {isLoggedIn ? (
-
           <div>
             <header className="sticky card top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white border-b dark:border-b-[#171C23] text-sm py-2.5 sm:py-4 lg:ps-64">
-              <nav className="flex basis-full items-center w-full mx-auto px-4 sm:px-6" aria-label="Global">
+              <nav
+                className="flex basis-full items-center w-full mx-auto px-4 sm:px-6"
+                aria-label="Global"
+              >
                 <div className="me-5 lg:me-0 lg:hidden">
-                  <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="../templates/admin/index.html" aria-label="Preline">
+                  <a
+                    className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80"
+                    href="../templates/admin/index.html"
+                    aria-label="Preline"
+                  >
                     <img src="/images/logo.png" alt="#" />
                   </a>
                 </div>
 
                 <div className="w-full flex items-center justify-end ms-auto sm:justify-between sm:gap-x-3 sm:order-3">
                   <div className="sm:hidden">
-                    <button type="button" className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-500 disabled:opacity-50 disabled:pointer-events-none">
-                      <svg className="flex-shrink-0 size-4 dark:text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                    <button
+                      type="button"
+                      className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-500 disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      <svg
+                        className="flex-shrink-0 size-4 dark:text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                      </svg>
                     </button>
                   </div>
 
                   <div className="hidden sm:block">
-                    <label htmlFor="icon" className="sr-only">Search</label>
+                    <label htmlFor="icon" className="sr-only">
+                      Search
+                    </label>
                     <div className="relative min-w-72 md:min-w-80">
                       <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-4">
-                        <svg className="flex-shrink-0 size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                        <svg
+                          className="flex-shrink-0 size-4 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="m21 21-4.3-4.3" />
+                        </svg>
                       </div>
-                      <input type="text" id="icon" name="icon" className="py-2 dark:bg-[#0D0D0D] dark:border-gray-800  outline-none border-2 px-4 ps-11 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" placeholder="Search" />
+                      <input
+                        type="text"
+                        id="icon"
+                        name="icon"
+                        className="py-2 dark:bg-[#0D0D0D] dark:border-gray-800  outline-none border-2 px-4 ps-11 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                        placeholder="Search"
+                      />
                     </div>
                   </div>
                   <div className="flex flex-row items-center justify-end gap-2 ">
-
-                    <ToggleSwitch className="me-2" checked={dark} onChange={handleDark} />
+                    <ToggleSwitch
+                      className="me-2"
+                      checked={dark}
+                      onChange={handleDark}
+                    />
                     <Dropdown
                       label={
                         langFlag && (
-                          <Image src={langFlag} width={24} height={24} alt="langIcon" />
+                          <Image
+                            src={langFlag}
+                            width={24}
+                            height={24}
+                            alt="langIcon"
+                          />
                         )
                       }
                       size="sm"
@@ -359,35 +492,115 @@ const NavBar = () => {
                       inline={true}
                       arrowIcon={false}
                     >
-                      <Dropdown.Item onClick={() => setLang("english")}><Image src={usaLogo} width={20} height={20} alt="langIcon" /><span className="ms-2 font-semibold">English</span></Dropdown.Item>
-                      <Dropdown.Item onClick={() => setLang("arabic")}><Image src={arabicFlag} width={20} height={20} alt="langIcon" /><span className="ms-2 font-semibold">Arabic</span></Dropdown.Item>
-                      <Dropdown.Item onClick={() => setLang("french")}><Image src={frenchLogo} width={20} height={20} alt="langIcon" /><span className="ms-2 font-semibold">French</span></Dropdown.Item>
+                      <Dropdown.Item onClick={() => setLang("english")}>
+                        <Image
+                          src={usaLogo}
+                          width={20}
+                          height={20}
+                          alt="langIcon"
+                        />
+                        <span className="ms-2 font-semibold">English</span>
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => setLang("arabic")}>
+                        <Image
+                          src={arabicFlag}
+                          width={20}
+                          height={20}
+                          alt="langIcon"
+                        />
+                        <span className="ms-2 font-semibold">Arabic</span>
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => setLang("french")}>
+                        <Image
+                          src={frenchLogo}
+                          width={20}
+                          height={20}
+                          alt="langIcon"
+                        />
+                        <span className="ms-2 font-semibold">French</span>
+                      </Dropdown.Item>
                     </Dropdown>
-                    <button onClick={() => {
-                      router.push('/notifies')
-                    }} type="button" className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 dark:hover:bg-gray-500 disabled:opacity-50 disabled:pointer-events-none">
-                      <svg className="flex-shrink-0 size-4 dark:text-white " xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>
+                    <button
+                      onClick={() => {
+                        router.push("/notifies");
+                      }}
+                      type="button"
+                      className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 dark:hover:bg-gray-500 disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      <svg
+                        className="flex-shrink-0 size-4 dark:text-white "
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                      </svg>
+                      {notificationsCount > 0 && (
+                        <div className="absolute top-4 left-5 bg-sky-500 text-white w-4 h-4 rounded-full flex justify-center items-center text-center text-sm">
+                          <span>{notificationsCount}</span>
+                        </div>
+                      )}
                     </button>
                     <div className="hs-dropdown [--placement:bottom-right] relative inline-flex ">
-                      <button onClick={toggleProfile} id="hs-dropdown-with-header" type="button" className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none">
-                        <img className="inline-block size-[38px] rounded-full" src="/images/me.png" alt="Image Description" />
+                      <button
+                        onClick={toggleProfile}
+                        id="hs-dropdown-with-header"
+                        type="button"
+                        className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+                      >
+                        <img
+                          className="inline-block size-[38px] rounded-full"
+                          src="/images/me.png"
+                          alt="Image Description"
+                        />
                       </button>
-                      {
-                        profile && (
-                          <div className="hs-dropdown-menu bg-white card transition-[opacity,margin] hs-dropdown-open:opacity-100 fixed  right-[40px] top-[80px] min-w-60  shadow-md rounded-lg p-2" aria-labelledby="hs-dropdown-with-header">
-                            <div className="py-3 px-5 -m-2  rounded-t-lg">
-                              <p className="text-sm text-gray-500 dark:text-gray-400">Signed in as</p>
-                              <p className="text-sm font-medium text-gray-800 dark:text-white">{profileData.data.email}</p>
-                            </div>
-                            <div className="mt-2 py-2 first:pt-0 last:pb-0">
-                              <button onClick={handleLogout} className="flex w-full items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-500 focus:ring-2 focus:ring-blue-500" >
-                                <svg className="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                                Sign out
-                              </button>
-                            </div>
+                      {profile && (
+                        <div
+                          className="hs-dropdown-menu bg-white card transition-[opacity,margin] hs-dropdown-open:opacity-100 fixed  right-[40px] top-[80px] min-w-60  shadow-md rounded-lg p-2"
+                          aria-labelledby="hs-dropdown-with-header"
+                        >
+                          <div className="py-3 px-5 -m-2  rounded-t-lg">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              Signed in as
+                            </p>
+                            <p className="text-sm font-medium text-gray-800 dark:text-white">
+                              {profileData?.data?.email}
+                            </p>
                           </div>
-                        )
-                      }
+                          <div className="mt-2 py-2 first:pt-0 last:pb-0">
+                            <button
+                              onClick={handleLogout}
+                              className="flex w-full items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-500 focus:ring-2 focus:ring-blue-500"
+                            >
+                              <svg
+                                className="flex-shrink-0 size-4"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                              </svg>
+                              Sign out
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -398,69 +611,126 @@ const NavBar = () => {
                 <ol className="ms-3 flex items-center whitespace-nowrap">
                   <li className="flex items-center text-sm text-gray-800 dark:text-white">
                     Application Layout
-                    <svg className="flex-shrink-0 mx-3 overflow-visible size-2.5 text-gray-400" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 1L10.6869 7.16086C10.8637 7.35239 10.8637 7.64761 10.6869 7.83914L5 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <svg
+                      className="flex-shrink-0 mx-3 overflow-visible size-2.5 text-gray-400"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 1L10.6869 7.16086C10.8637 7.35239 10.8637 7.64761 10.6869 7.83914L5 14"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </li>
-                  <li className="text-sm font-semibold text-gray-800 dark:text-white truncate" aria-current="page">
+                  <li
+                    className="text-sm font-semibold text-gray-800 dark:text-white truncate"
+                    aria-current="page"
+                  >
                     {pathname.slice(1).toUpperCase()}
                   </li>
                 </ol>
-                <button onClick={OpenSideBar} type="button" className="py-2 px-3 flex justify-center items-center gap-x-1.5 text-xs rounded-lg   text-gray-500 hover:text-gray-600" data-hs-overlay="#application-sidebar" aria-controls="application-sidebar" aria-label="Sidebar">
-                  <svg className="flex-shrink-0 size-4 dark:text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8L21 12L17 16M3 12H13M3 6H13M3 18H13" /></svg>
+                <button
+                  onClick={OpenSideBar}
+                  type="button"
+                  className="py-2 px-3 flex justify-center items-center gap-x-1.5 text-xs rounded-lg   text-gray-500 hover:text-gray-600"
+                  data-hs-overlay="#application-sidebar"
+                  aria-controls="application-sidebar"
+                  aria-label="Sidebar"
+                >
+                  <svg
+                    className="flex-shrink-0 size-4 dark:text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17 8L21 12L17 16M3 12H13M3 6H13M3 18H13" />
+                  </svg>
                   <span className="sr-only">Sidebar</span>
                 </button>
               </div>
             </div>
-            {
-              (
-                isOpen &&
-                <div id="application-sidebar" className={`hs-overlay [--auto-close:lg]  hs-overlay-open:translate-x-0 transition-all duration-300 transform ${small ? 'w-[90px]' : 'w-[260px]'} lg:drop-shadow-none drop-shadow-2xl ${!isOpen ? 'w-0 ' : ''} fixed ease-in duration-300 inset-y-0 start-0 z-[60] bg-white border-e dark:border-[#171C23] lg:block card  lg:translate-x-0 lg:end-auto lg:bottom-0 `}>
-                  <div className="px-8 pt-4 ">
-                    {
-                      small ? (
-                        <img className="scale-[2] mt-5" src="/images/small logo.png" alt="Logo" />
-                      ) : (
-                        <img className="w-[150px] -translate-x-7" src="/images/logo.png" alt="Logo" />
-                      )
-                    }
-                  </div>
-                  <div className="flex justify-end mr-5 -translate-y-6">
-                    {
-                      !small && (
+            {isOpen && (
+              <div
+                id="application-sidebar"
+                className={`hs-overlay [--auto-close:lg]  hs-overlay-open:translate-x-0 transition-all duration-300 transform ${
+                  small ? "w-[90px]" : "w-[260px]"
+                } lg:drop-shadow-none drop-shadow-2xl ${
+                  !isOpen ? "w-0 " : ""
+                } fixed ease-in duration-300 inset-y-0 start-0 z-[60] bg-white border-e dark:border-[#171C23] lg:block card  lg:translate-x-0 lg:end-auto lg:bottom-0 `}
+              >
+                <div className="px-8 pt-4 ">
+                  {small ? (
+                    <img
+                      className="scale-[2] mt-5"
+                      src="/images/small logo.png"
+                      alt="Logo"
+                    />
+                  ) : (
+                    <img
+                      className="w-[150px] -translate-x-7"
+                      src="/images/logo.png"
+                      alt="Logo"
+                    />
+                  )}
+                </div>
+                <div className="flex justify-end mr-5 -translate-y-6">
+                  {!small && (
+                    <button onClick={toggleNavbarSmall}>
+                      <img
+                        className="scale-[1.4] "
+                        src="/images/nav.png"
+                        alt="Logo"
+                      />
+                    </button>
+                  )}
+                </div>
+                <nav
+                  className={`hs-accordion-group  py-6 px-2 w-full flex flex-col flex-wrap ${
+                    !isOpen ? "hidden " : ""
+                  } `}
+                  data-hs-accordion-always-open
+                >
+                  <ul
+                    className={`space-y-1.5 flex flex-col ${
+                      small && "items-center mt-5"
+                    } `}
+                  >
+                    <div className={`flex justify-center`}>
+                      {small && (
                         <button onClick={toggleNavbarSmall}>
-                          <img className="scale-[1.4] " src="/images/nav.png" alt="Logo" />
+                          <img src="/images/arrow.png" alt="Logo" />
                         </button>
-                      )
-                    }
-                  </div>
-                  <nav className={`hs-accordion-group  py-6 px-2 w-full flex flex-col flex-wrap ${!isOpen ? 'hidden ' : ''} `} data-hs-accordion-always-open>
-                    <ul className={`space-y-1.5 flex flex-col ${small && "items-center mt-5"} `}>
-                      <div className={`flex justify-center`}>
-                        {
-                          small && (
-                            <button onClick={toggleNavbarSmall}>
-                              <img src="/images/arrow.png" alt="Logo" />
-                            </button>
-                          )
-                        }
-                      </div>
+                      )}
+                    </div>
 
-                      {links.map((link) => (
-                        <li key={link.id}>
-                          <Link
-                            href={link.href}
-                            className={`flex items-center gap-x-3.5 py-2 mt-4 px-2.5  font-bold text-md font-sans text-[#526484] group rounded-lg hover:bg-gray-100 hover:text-[#3e5af0]`}
-                          >
-                            {link.icon}
-                            {!small && <span className="text-nowrap">{link.name}</span>}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-                </div>)
-            }
+                    {links.map((link) => (
+                      <li key={link.id}>
+                        <Link
+                          href={link.href}
+                          className={`flex items-center gap-x-3.5 py-2 mt-4 px-2.5  font-bold text-md font-sans text-[#526484] group rounded-lg hover:bg-gray-100 hover:text-[#3e5af0]`}
+                        >
+                          {link.icon}
+                          {!small && (
+                            <span className="text-nowrap">{link.name}</span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            )}
           </div>
         ) : (
           <div></div>

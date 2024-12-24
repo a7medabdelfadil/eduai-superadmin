@@ -6,6 +6,7 @@ import { FileInput, Label, TextInput } from "flowbite-react";
 import { toast } from "react-toastify"; // استيراد toast من react-toastify
 import { useAddTopicMutation } from "../../api/getCoursesSlice";
 import Container from "@/components/Container";
+import Spinner from "@/components/spinner";
 
 interface Topic {
     name_en: string;
@@ -57,7 +58,6 @@ const AddTopic: React.FC = () => {
     const handleSubmit = async () => {
         const formData = new FormData();
     
-        // إنشاء كائن request يتضمن جميع البيانات
         const requestData = {
             lessonId: params.lessonId,
             name_en: topic.name_en,
@@ -66,18 +66,15 @@ const AddTopic: React.FC = () => {
             videoUrls: topic.videoUrls,
         };
     
-        // إضافة كائن request إلى formData
         formData.append("request", JSON.stringify(requestData));
     
-        // إضافة الملف إذا كان موجودًا
         if (topic.file) {
             formData.append("file", topic.file);
         }
     
         try {
             await addTopic({ token, data: formData }).unwrap();
-            toast.success("Topic added successfully");
-            // إعادة تعيين الحالة بعد الإضافة
+            toast.success("Lesson added successfully");
             setTopic({
                 name_en: '',
                 name_ar: '',
@@ -86,11 +83,12 @@ const AddTopic: React.FC = () => {
                 file: null,
             });
         } catch (error) {
-            toast.error("Failed to add topic");
+            toast.error("Failed to add Lesson");
         }
     };
     
 
+    
     return (
         <>
             <Container>

@@ -9,12 +9,13 @@ import SecoundStep from '@/app/create-course/components/steps/SecoundStep';
 import FourthStep from '@/app/create-course/components/steps/FourthStep';
 import { toast } from 'react-toastify';
 import Container from '@/components/Container';
+import Spinner from '@/components/spinner';
 
 function Page() {
     const [activeStep, setActiveStep] = useState(0);
     const params = useParams()
     const token = Cookies.get('token') || "";
-    const {data} = useGetCourseByIdQuery({token , id:params.id})
+    const {data, isLoading} = useGetCourseByIdQuery({token , id:params.id})
     const [code, setCode] = useState("")
     const [countryId, setCountryId] = useState("")
     const [level, setLevel] = useState("")
@@ -146,6 +147,11 @@ function Page() {
         }
     ];
 
+    if (isLoading) {
+        return <div className='w-full h-screen flex justify-center items-center'>
+           <Spinner />
+        </div>
+    }
     return (
         <Container className="relative mt-5 overflow-x-auto  bg-transparent sm:rounded-lg px-2  min-h-screen">
             <h1 className="font-bold text-[28px] font-sans text-[#041631] dark:text-white">Update Course</h1>

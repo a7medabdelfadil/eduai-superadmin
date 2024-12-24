@@ -18,7 +18,17 @@ export const profileApis = createApi({
             }),
             providesTags: ['profile'],
         }),
+        getProfileWithId: builder.query({
+            query: ( token ) => ({
+                url: `my-account/profile/user`,
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            }),
+            providesTags: ['profile'],
+        }),
     }),
 })
 
-export const { useGetProfileQuery } = profileApis
+export const { useGetProfileQuery, useGetProfileWithIdQuery } = profileApis

@@ -517,7 +517,7 @@ const ThirdStep: React.FC<ThirdStepProps> = ({
             </defs>
           </svg>
           <span className="block text-[#526484] md:text-lg font-medium  ms-3">
-            Add New Topics
+            Add New Lesson
           </span>
         </button>
       </div>
