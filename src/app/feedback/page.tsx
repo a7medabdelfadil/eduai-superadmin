@@ -10,7 +10,7 @@ import Container from "@/components/Container";
 
 const FeedBack = () => {
 
-    const token = Cookies.get("token") || ""
+    const token = Cookies.get("token") || "";
 
     const [search, setSearch] = useState("")
     const [page, setCurrentPage] = useState(0)
@@ -64,7 +64,7 @@ const FeedBack = () => {
                     <div className="my-3">
                         <label htmlFor="icon" className="sr-only">Search</label>
                         <div className="relative min-w-72 md:min-w-80">
-                            <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-4">
+                            <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-[1000] ps-4">
                                 <svg className="flex-shrink-0 size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                             </div>
                             <input onChange={(e) => setSearch(e.target.value)} type="text" id="icon" name="icon" className="py-2 dark:bg-[#0D0D0D] dark:border-gray-800  outline-none border-2 px-4 ps-11 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" placeholder="Search" />
@@ -138,18 +138,19 @@ const FeedBack = () => {
 
             
                 {successFeedback && (
-                    <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
+                    <Modal className="z-[1002]" show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
                         <Modal.Header />
                         <Modal.Body>
                             <div className="text-start">
-                                <h3 className="mb-5 text-xl font-normal text-gray-500 dark:text-gray-400">
+                                <h3 className="mb-5 text-xl font-normal text-gray-500  dark:text-gray-400">
                                     School name : {feedback.data.schoolName}
                                 </h3>
                                 <p className="mb-5">User name : {feedback.data.userName}</p>
                                 <p className="mb-5">message : {feedback.data.message}</p>
                                 <div className="grid md:grid-cols-2 mb-5">
                                     {feedback.data.attachments.map((item: any) => (
-                                        <Image className="md:m-2 my-2 mx-auto" width={150} height={150} key={item.id} src={item.viewLink} alt="" />
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img className="md:m-2 my-2 mx-auto" width={150} height={150} key={item.id} src={item.viewLink} alt="photo" />
                                     ))}
                                 </div>
                                 <div className="flex justify-center gap-4">
@@ -163,11 +164,11 @@ const FeedBack = () => {
                 )}
 
 
-                <Modal show={openModalDelete} size="md" onClose={() => setOpenModalDelete(false)} popup>
+                <Modal className="z-[1000]" show={openModalDelete} size="md" onClose={() => setOpenModalDelete(false)} popup>
                     <Modal.Header />
                     <Modal.Body>
                         <div className="text-center">
-                            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                            <h3 className="mb-5 text-lg font-normal text-gray-500 z-[1001] dark:text-gray-400">
                                 Are you sure you want to delete this Feedback?
                             </h3>
                             <div className="flex justify-center gap-4">

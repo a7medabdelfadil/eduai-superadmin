@@ -17,7 +17,7 @@ import { useGetProfileQuery, useGetProfileWithIdQuery } from "./api/profileApi";
 import { RootState } from "@/app/GlobalRedux/store";
 import { login, logout } from "@/app/GlobalRedux/AuthSlice";
 import { closeSideBar, openSideBar } from "@/app/GlobalRedux/SidebarSlice";
-import { useNotificationsWebSocket } from "@/hooks/useNofifications";
+import { useNotificationsWebSocket } from "@/hooks/useNotifications";
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -667,7 +667,7 @@ const NavBar = () => {
                   small ? "w-[90px]" : "w-[260px]"
                 } lg:drop-shadow-none drop-shadow-2xl ${
                   !isOpen ? "w-0 " : ""
-                } fixed ease-in duration-300 inset-y-0 start-0 z-[60] bg-white border-e dark:border-[#171C23] lg:block card  lg:translate-x-0 lg:end-auto lg:bottom-0 `}
+                } fixed ease-in duration-300 inset-y-0 start-0 z-[60] bg-white border-e dark:border-[#171C23] lg:block card  lg:translate-x-0 lg:end-auto lg:bottom-0 overflow-y-auto`}
               >
                 <div className="px-8 pt-4 ">
                   {small ? (

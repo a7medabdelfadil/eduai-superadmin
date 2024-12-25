@@ -22,7 +22,7 @@ import { profileApis } from "@/components/api/profileApi";
 import { createSchoolPermissionsSlice } from "../manage-school/features/[id]/api/schoolPermissions";
 import { authSlice } from "./AuthSlice";
 import { sideBarSlice } from "./SidebarSlice";
-import { notifiesSlice } from "../notifies/api/notifies";
+import { notificationsApi } from "../notifies/api/notifies";
 
 export const store = configureStore({
     reducer: { // RootReducer
@@ -48,7 +48,7 @@ export const store = configureStore({
         [createSchoolPlanApi.reducerPath]: createSchoolPlanApi.reducer,
         [profileApis.reducerPath]: profileApis.reducer,
         [createSchoolPermissionsSlice.reducerPath]: createSchoolPermissionsSlice.reducer,
-        [notifiesSlice.reducerPath]: notifiesSlice.reducer,
+        [notificationsApi.reducerPath]: notificationsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().
@@ -71,7 +71,7 @@ export const store = configureStore({
             concat(createSchoolPlanApi.middleware).
             concat(profileApis.middleware).
             concat(createSchoolPermissionsSlice.middleware).
-            concat(notifiesSlice.middleware) 
+            concat(notificationsApi.middleware) 
 
 });
 
