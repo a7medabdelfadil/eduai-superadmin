@@ -134,9 +134,9 @@ function Page() {
         <Container className="relative mt-5 overflow-x-auto  bg-transparent sm:rounded-lg px-2 min-h-screen">
             <h1 className="font-bold text-[28px] font-sans text-[#041631] dark:text-white">Create Education System</h1>
 
-            <div className='grid grid-cols-2 gap-4 max-[1278px]:grid-cols-1 mb-10'>
+            <div className='grid grid-cols-2 gap-4 max-[1278px]:grid-cols-1 my-10 p-4 rounded-xl bg-white card'>
                 <div>
-                    <div className="my-4 block">
+                    <div className="mb-4 block">
                         <Label className='md:text-lg capitalize font-medium' htmlFor="name" value="name" />
                         <span className='text-[#367AFF] text-2xl ms-1'>*</span>
                     </div>

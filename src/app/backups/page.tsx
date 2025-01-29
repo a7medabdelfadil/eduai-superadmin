@@ -139,10 +139,10 @@ const BackUp = () => {
 
         isSuccess && backups.data?.content.length > 0 ? (
             <>
-                <Container className="md:px-2 relative mt-10 overflow-x-auto bg-transparent sm:rounded-lg max-[1200px]:w-screen h-screen">
-                    <h1 className="font-bold text-[28px] mb-3 font-sans text-[#041631] dark:text-white">Backups</h1>
+                <Container className="md:px-2 px-4 relative mt-10 overflow-x-auto bg-transparent sm:rounded-lg max-[1200px]:w-screen h-screen">
+                    <h1 className="font-bold text-[28px] mb-3 font-sans text-[#041631] dark:text-white ">Backups</h1>
 
-                    <div className="flex justify-between max-[502px]:grid max-[502px]:justify-center text-center">
+                    <div className="flex justify-between max-[502px]:grid max-[502px]:justify-center text-center ">
                         <div className="my-3">
                             <label htmlFor="icon" className="sr-only">Search</label>
                             <div className="relative min-w-72 md:min-w-80">
@@ -254,7 +254,7 @@ const BackUp = () => {
                 </Container>
 
                 {successBackup && (
-                    <Modal show={openModalDetails} size="md" onClose={() => setOpenModalDetails(false)} popup>
+                    <Modal show={openModalDetails} size="md" className="z-[1000]" onClose={() => setOpenModalDetails(false)} popup>
                         <Modal.Header />
                         <Modal.Body>
                             <div className="text-start">
@@ -280,7 +280,7 @@ const BackUp = () => {
                 )}
 
 
-                <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
+                <Modal show={openModal} size="md" className="z-[1000]" onClose={() => setOpenModal(false)} popup>
                     <Modal.Header />
                     <Modal.Body>
                         <div className="text-center">

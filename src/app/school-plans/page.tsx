@@ -53,7 +53,7 @@ const PlanSchool = () => {
     </div>
   ) : isSuccess && dataSchoolPlans?.data.content.length > 0 ? (
     <>
-      <Container className="md:px-2 relative mt-10 overflow-x-auto bg-transparent sm:rounded-lg max-[1200px]:w-screen h-screen">
+      <Container className="px-2 relative mt-10 overflow-x-auto bg-transparent sm:rounded-lg max-[1200px]:w-screen h-screen">
         <h1 className="font-bold text-[28px] mb-3 font-sans text-[#041631] dark:text-white">
           School Plans
         </h1>

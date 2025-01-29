@@ -107,7 +107,7 @@ function Page() {
         <Container className="relative mt-5 overflow-x-auto  bg-transparent sm:rounded-lg px-2  min-h-screen">
             <h1 className="font-bold text-[28px] font-sans text-[#041631] dark:text-white">Update Education System</h1>
 
-            <div className='grid grid-cols-2 gap-4 max-[1278px]:grid-cols-1 mb-10'>
+            <div className='grid grid-cols-2 gap-4 my-10 max-[1278px]:grid-cols-1 pb-8 px-4 rounded-xl bg-white card'>
                 <div>
                     <div className="my-4 block">
                         <Label className='md:text-lg capitalize font-medium' htmlFor="name" value="name" />
@@ -144,7 +144,7 @@ function Page() {
                 </div>
             </div>
             <div className="flex justify-center text-center">
-                <button onClick={() => handleSend()} type="submit" className="px-4 py-2 rounded-xl bg-[#3E5AF0] hover:bg-[#4a5cc5] hover:shadow-xl text-white  text-[16px] w-[220px] ease-in duration-300">Update Education System</button>
+                <button onClick={() => handleSend()} type="submit" className="px-6 py-4 rounded-xl bg-[#3E5AF0] hover:bg-[#4a5cc5] hover:shadow-xl text-white  text-[16px] w-fit ease-in duration-300">Update Education System</button>
             </div>
         </Container>
     )

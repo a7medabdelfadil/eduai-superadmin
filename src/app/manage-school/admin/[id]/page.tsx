@@ -60,7 +60,7 @@ const Admins = () => {
                                     Religion
                                 </th>
                                 <th scope="col" className="px-6 py-3 whitespace-nowrap">
-                                    Plan
+                                    View
                                 </th>
                                 <th scope="col" className="px-6 py-3 whitespace-nowrap">
                                     Actions
@@ -93,7 +93,7 @@ const Admins = () => {
                                         {item.religion}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <Link className='flex items-center' href={`/manage-school/plan-school/${params.id}`}>
+                                        <Link className='flex items-center' href={`/manage-school/admin/view-admin/${item.id}`}>
                                             <svg
                                                 width="30"
                                                 height="24"

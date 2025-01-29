@@ -131,11 +131,11 @@ function Page() {
       <h1 className="font-bold text-[28px] font-sans text-[#041631] dark:text-white">
         Create Course
       </h1>
-      <div className="grid md:grid-cols-3 gap-8 mt-16">
-        <div className="md:col-span-2">
-          <div className=" h-full ">{steps[activeStep].ele}</div>
+      <div className="flex flex-col-reverse md:flex-row md: gap-8 mt-16">
+        <div className="w-full md:w-2/3 md:col-span-2">
+          <div className="h-full">{steps[activeStep].ele}</div>
         </div>
-        <div>
+        <div className="w-full md:w-1/3">
           <div className="flex flex-col">
             {steps.map((item, index) => (
               <div className="flex items-center" key={index}>

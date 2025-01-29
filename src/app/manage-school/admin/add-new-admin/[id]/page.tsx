@@ -190,7 +190,7 @@ const AddNewAdmin = () => {
                                     <Label className='md:text-lg capitalize font-medium' htmlFor="nid" value="nid" />
                                     <span className='text-[#367AFF] text-2xl ms-1'>*</span>
                                 </div>
-                                <TextInput value={nid} onChange={(e) => setNid(e.target.value)} id="nid" type="text" placeholder="nid" required />
+                                <TextInput value={nid} onChange={(e) => setNid(e.target.value)} id="nid" type="number" placeholder="nid" required />
                             </div>
                             <div className='xl:mt-3'>
                                 <label className='mb-3 inline-block md:text-lg capitalize font-medium' htmlFor="gender">gender <span className='text-[#367AFF] text-xl'>*</span></label>

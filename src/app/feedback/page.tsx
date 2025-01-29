@@ -57,7 +57,7 @@ const FeedBack = () => {
 
     return (
         <>
-            <Container className="md:px-2 relative mt-5 overflow-x-auto bg-transparent sm:rounded-lg max-[1200px]:w-screen ">
+            <Container className="relative mt-5 px-2 overflow-x-auto bg-transparent sm:rounded-lg max-[1200px]:w-screen ">
                 <h1 className="font-bold text-[28px] mb-3 font-sans text-[#041631] dark:text-white">Feedback</h1>
 
                 <div className="flex justify-between max-[502px]:grid max-[502px]:justify-center text-center">
@@ -138,7 +138,7 @@ const FeedBack = () => {
 
             
                 {successFeedback && (
-                    <Modal className="z-[1002]" show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
+                    <Modal className="z-[1000]" show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
                         <Modal.Header />
                         <Modal.Body>
                             <div className="text-start">

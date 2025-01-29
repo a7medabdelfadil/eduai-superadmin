@@ -22,7 +22,7 @@ const ManageSchool = () => {
 
     return (
         <>
-            <Container>
+            <Container className="ml-4">
                 {
                     empty || isError ?
                     <EmptyEducations/>

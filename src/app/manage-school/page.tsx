@@ -24,7 +24,7 @@ const ManageSchool = () => {
     const empty = data?.data?.emptyPage;
     return (
         <>
-            <Container>
+            <Container className="ml-4">
                 
                 {
                     empty || isError ?

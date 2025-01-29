@@ -139,7 +139,7 @@ const CreateSchoolPlans = () => {
   }, [isError, error]);
 
   return (
-    <Container centered={true} className="mt-10">
+    <Container centered={true} className="mt-10 p-4">
       <form>
         <h1 className="font-bold text-[28px] mb-4 font-sans text-[#041631] dark:text-white">
           Add New School Plan

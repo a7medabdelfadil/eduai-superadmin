@@ -21,7 +21,9 @@ const Features = () => {
   const { data } = useGetSchoolPermissionsQuery(token);
   const features = data?.data || [];
 
-  const [openCategories, setOpenCategories] = useState<{ [key: string]: boolean }>({});
+  const [openCategories, setOpenCategories] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedItemsCost, setSelectedItemsCost] = useState<number>(0);
 
@@ -44,10 +46,11 @@ const Features = () => {
     setSelectedItemsCost((prev) => prev - cost); // خصم التكلفة
   };
 
-  const { data: schoolPermissionData, refetch } = useGetSchoolPermissionByIdQuery({
-    token,
-    id,
-  });
+  const { data: schoolPermissionData, refetch } =
+    useGetSchoolPermissionByIdQuery({
+      token,
+      id,
+    });
 
   useEffect(() => {
     if (schoolPermissionData?.data) {
@@ -84,24 +87,25 @@ const Features = () => {
   };
 
   const handleViewFeatures = () => {
-    router.push('/manage-school/view-features/' + id);
+    router.push("/manage-school/view-features/" + id);
   };
 
   const { data: schoolData } = useGetSchoolByIdQuery({ token, id });
 
   return (
-    <Container className="mt-[70px]">
+    <Container className="mt-[70px] px-4 sm:px-6 lg:px-8 min-h-screen">
       {features && features.length > 0 ? (
-          <div className="rounded-xl pb-10 mb-10 bg-white p-4 dark:bg-black dark:text-white">
-          <div className="flex rounded-t-xl pb-10 text-2xl font-bold justify-between dark:text-white">
-            <p>Edit {schoolData?.data?.name} Features</p>
+        <div className="rounded-xl pb-10 mb-10 bg-white p-4 dark:bg-black dark:text-white max-w-full">
+          <div className="flex flex-wrap justify-between items-center rounded-t-xl pb-10 text-xl sm:text-2xl font-bold dark:text-white">
+            <p className="w-full sm:w-auto">{`Edit ${schoolData?.data?.name} Features`}</p>
             <button
               onClick={handleViewFeatures}
-              className="px-4 py-2.5 rounded-xl bg-[#3E5AF0] hover:bg-[#4a5cc5] hover:shadow-xl text-white font-bold text-[18px] w-[200px] ease-in duration-300"
+              className="px-4 py-2.5 rounded-xl bg-[#3E5AF0] hover:bg-[#4a5cc5] hover:shadow-xl text-white font-bold text-[16px] sm:text-[18px] w-full sm:w-[200px] mt-4 sm:mt-0 ease-in duration-300"
             >
               View Features
             </button>
           </div>
+
           <div>
             {features.map((feature: any) => (
               <div key={feature.category} className="mb-4">
@@ -109,7 +113,7 @@ const Features = () => {
                   className="flex justify-between items-center cursor-pointer bg-gray-200 dark:bg-gray-700 dark:text-white px-4 py-2 rounded-md"
                   onClick={() => toggleCategory(feature.category)}
                 >
-                  <h2 className="text-lg font-bold text-gray-700 dark:text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-700 dark:text-white">
                     {feature.category}
                   </h2>
                   <span className="text-gray-500 dark:text-gray-400">
@@ -120,13 +124,24 @@ const Features = () => {
                 {openCategories[feature.category] && (
                   <ul className="ml-4 mt-2 list-disc text-gray-600 dark:text-gray-300">
                     {feature.Permissions.map((permission: any) => (
-                      <li key={permission.name} className="flex justify-between mt-4">
-                        <span>
-                          {permission.name} (Cost: {permission.cost})
-                        </span>
+                      <li
+                        key={permission.name}
+                        className="flex justify-between mt-4 text-sm md:text-base"
+                      >
+                        <span>{`${permission.name} (Cost: ${permission.cost})`}</span>
                         <button
-                          onClick={() => handleAddPermission(permission.name, permission.cost)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition"
+                          onClick={() =>
+                            handleAddPermission(
+                              permission.name,
+                              permission.cost
+                            )
+                          }
+                          className={`px-2 py-1 rounded-md text-sm md:text-base transition ${
+                            selectedItems.includes(permission.name)
+                              ? "bg-gray-500 cursor-not-allowed"
+                              : "bg-blue-500 hover:bg-blue-600"
+                          } text-white`}
+                          disabled={selectedItems.includes(permission.name)}
                         >
                           <IoMdAdd size={20} />
                         </button>
@@ -137,30 +152,36 @@ const Features = () => {
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-center space-x-12">
+
+          <div className="mt-4 flex flex-wrap justify-center gap-4 sm:gap-12">
             <button
               onClick={handleSend}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition text-sm sm:text-base"
             >
               Save
             </button>
             <button
               onClick={handleCancel}
-              className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400 transition"
+              className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400 transition text-sm sm:text-base"
             >
               Cancel
             </button>
           </div>
 
           <div className="mt-6">
-            <h3 className="text-xl font-bold text-gray-700 dark:text-white">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-700 dark:text-white">
               Selected Items:
             </h3>
             <ul className="ml-4 mt-2 list-disc text-gray-600 dark:text-gray-300">
               {selectedItems.length > 0 ? (
                 selectedItems.map((item, index) => (
-                  <li key={index} className="flex justify-between mt-4">
-                    <span>{index + 1}. {item}</span>
+                  <li
+                    key={index}
+                    className="flex justify-between items-center mt-4 text-sm md:text-base"
+                  >
+                    <span className="flex-1 truncate">
+                      {index + 1}. {item}
+                    </span>
                     <button
                       onClick={() => {
                         const permission = features
@@ -168,20 +189,20 @@ const Features = () => {
                           .find((permission: any) => permission.name === item);
                         handleRemoveItem(item, permission?.cost || 0);
                       }}
-                      className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition"
+                      className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition text-sm md:text-base"
                     >
                       <IoMdRemove size={20} />
                     </button>
                   </li>
                 ))
               ) : (
-                <p>No items selected.</p>
+                <p className="text-center text-gray-500">No items selected.</p>
               )}
             </ul>
           </div>
 
           <div className="mt-4">
-            <h3 className="text-xl font-bold text-gray-700 dark:text-white">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-700 dark:text-white">
               Total Cost: ${selectedItemsCost}
             </h3>
           </div>

@@ -60,7 +60,7 @@ const CurriculumManagement = () => {
         </Link>
       </Container>
       <Container
-        className="mt-12"
+        className="px-5 mt-12"
       >
         <h1 className="font-bold text-[28px] mb-5 font-sans text-[#041631] dark:text-white">Curriculum Management</h1>
         <div className="grid grid-cols-2 gap-5 max-[577px]:grid-cols-1 md:grid-cols-3 justify-items-center">
