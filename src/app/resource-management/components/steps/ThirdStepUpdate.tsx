@@ -26,7 +26,8 @@ interface ThirdStepProps {
   dataAddCourse: any;
 }
 
-const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
+const 
+ThirdStepUpdate: React.FC<ThirdStepProps> = ({
   dataAddCourse,
   handleNext,
   handlePrev,
@@ -681,7 +682,7 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
               onClick={closeModalMany}
             >
               <div
-                className="bg-white p-6 rounded-lg w-1/2 mx-auto mt-20"
+                className="bg-white p-6 rounded-lg max-h-[80%] overflow-y-auto w-1/2 mx-auto mt-20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <h2 className="text-xl font-semibold mb-4">Upload Files</h2>
@@ -772,7 +773,7 @@ const ThirdStepUpdate: React.FC<ThirdStepProps> = ({
           onClick={handleSend}
           className="text-white font-medium border border-[#367AFF] flex items-center bg-[#367AFF] md:text-lg py-1.5 px-8 rounded-lg hover:opacity-80"
         >
-          Next
+          Save
           <svg
             width="24"
             height="20"

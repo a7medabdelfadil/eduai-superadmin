@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { ReactNode, useEffect } from "react";
 import { Inter } from "next/font/google";
@@ -8,6 +8,7 @@ import { Providers } from "./GlobalRedux/provider";
 import Notification from "../components/Notifications";
 import "react-toastify/dist/ReactToastify.css";
 import ThemeMode from "../components/ThemeMode";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,20 +17,23 @@ interface RootLayoutProps {
 }
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
+  const pathname = usePathname();
+  const isLoggingIn = pathname === "/login";
+
   useEffect(() => {
     (document.documentElement.style as any).zoom = "1";
 
     const handleZoom = (e: WheelEvent | KeyboardEvent) => {
       if ((e as KeyboardEvent).ctrlKey || (e as WheelEvent).ctrlKey) {
         e.preventDefault();
-        
-        const currentZoom = (document.documentElement.style as any).zoom 
-          ? parseFloat((document.documentElement.style as any).zoom) 
+
+        const currentZoom = (document.documentElement.style as any).zoom
+          ? parseFloat((document.documentElement.style as any).zoom)
           : 1;
 
         let newZoom = currentZoom;
-        
-        if (e.type === 'wheel') {
+
+        if (e.type === "wheel") {
           const wheelEvent = e as WheelEvent;
           if (wheelEvent.deltaY < 0) {
             newZoom = Math.min(currentZoom + 0.1, 1.1);
@@ -37,16 +41,16 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
             newZoom = Math.max(currentZoom - 0.1, 0.7);
           }
         }
-        
-        if (e.type === 'keydown') {
+
+        if (e.type === "keydown") {
           const keyEvent = e as KeyboardEvent;
-          if (keyEvent.key === '+' || keyEvent.key === '=') {
+          if (keyEvent.key === "+" || keyEvent.key === "=") {
             newZoom = Math.min(currentZoom + 0.1, 1.1);
-          } else if (keyEvent.key === '-') {
+          } else if (keyEvent.key === "-") {
             newZoom = Math.max(currentZoom - 0.1, 0.7);
           }
         }
-        
+
         (document.documentElement.style as any).zoom = newZoom.toString();
       }
     };
@@ -66,22 +70,22 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
       lastTouchEnd = now;
     };
 
-    window.addEventListener('wheel', handleZoom as any, { passive: false });
-    window.addEventListener('keydown', handleZoom as any);
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    window.addEventListener("wheel", handleZoom as any, { passive: false });
+    window.addEventListener("keydown", handleZoom as any);
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     return () => {
-      window.removeEventListener('wheel', handleZoom as any);
-      window.removeEventListener('keydown', handleZoom as any);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener("wheel", handleZoom as any);
+      window.removeEventListener("keydown", handleZoom as any);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
   return (
     <html suppressHydrationWarning={true} lang="en">
-    <head>
+      <head>
         <title>Welcome to EduAI Super Admin Portal</title>
         <meta
           name="description"
@@ -96,7 +100,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
       <body className={`${inter.className} duration-300 transition-all `}>
         <Providers>
           <ThemeMode>
-            <NavBar />
+            {!isLoggingIn && <NavBar />}
             <Notification />
             {children}
           </ThemeMode>

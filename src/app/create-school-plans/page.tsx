@@ -27,7 +27,7 @@ const CreateSchoolPlans = () => {
   const [openPermissions, setOpenPermissions] = useState(false);
   const { data: permissionsData, isSuccess: permissionsSuccess } =
     useGetPermissionsQuery(token);
-    console.log('permissionsData: ', permissionsData);
+  console.log("permissionsData: ", permissionsData);
   const [addSchoolPlan, { data, isSuccess, isLoading, error, isError }] =
     useAddSchoolPlanMutation();
 
@@ -45,7 +45,6 @@ const CreateSchoolPlans = () => {
   const validateInputs = () => {
     let isValid = true;
 
-    // Reset all error messages before validation
     setNameError("");
     setDaysCountError("");
     setPermissionsError("");
@@ -86,10 +85,11 @@ const CreateSchoolPlans = () => {
     }
 
     const body = {
-      name,
-      daysCount,
-      permissions,
+      name: "test",
+      daysCount: 1,
+      permissions: ["ADMIN"],
     };
+    console.log("👾 ~ handleSend ~ body:", body)
 
     const res = await addSchoolPlan({ token, body }).unwrap();
     if (res.success) {
@@ -204,31 +204,48 @@ const CreateSchoolPlans = () => {
                   </button>
                   {openPermissions && (
                     <ul className="absolute dark:bg-slate-700 max-h-[350px] overflow-auto z-10 w-full mt-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg   ">
-                      {permissionsData.data.map((item: any) => (
-                        <li
-                          key={item.id}
-                          className="w-full select-none border-b border-gray-200 rounded-t-lg "
-                        >
-                          <div className="flex items-center ps-3">
-                            <input
-                              id={item.id}
-                              type="checkbox"
-                              value={item.id}
-                              checked={permissions.includes(item.name)}
-                              onChange={() =>
-                                handleCheckboxChangePermissions(item.name)
-                              }
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 "
-                            />
-                            <label
-                              htmlFor={item.id}
-                              className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                              {item.name}
-                            </label>
+                      {permissionsData.data.map(
+                        (categoryItem: any, index: number) => (
+                          <div key={index}>
+                            <h4 className="font-bold ml-2 my-2">
+                              {categoryItem.category}
+                            </h4>
+                            <ul>
+                              {categoryItem.Permissions.map(
+                                (permission: any) => (
+                                  <li
+                                    key={permission.name}
+                                    className="w-full select-none border-b border-gray-200 rounded-t-lg"
+                                  >
+                                    <div className="flex items-center ps-3">
+                                      <input
+                                        id={permission.name}
+                                        type="checkbox"
+                                        value={permission.name}
+                                        checked={permissions.includes(
+                                          permission.name
+                                        )}
+                                        onChange={() =>
+                                          handleCheckboxChangePermissions(
+                                            permission.name
+                                          )
+                                        }
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                      />
+                                      <label
+                                        htmlFor={permission.name}
+                                        className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-white"
+                                      >
+                                        {permission.name}
+                                      </label>
+                                    </div>
+                                  </li>
+                                )
+                              )}
+                            </ul>
                           </div>
-                        </li>
-                      ))}
+                        )
+                      )}
                     </ul>
                   )}
                   {/* Error message for permissions */}

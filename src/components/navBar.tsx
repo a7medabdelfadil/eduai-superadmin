@@ -18,16 +18,33 @@ import { RootState } from "@/app/GlobalRedux/store";
 import { login, logout } from "@/app/GlobalRedux/AuthSlice";
 import { closeSideBar, openSideBar } from "@/app/GlobalRedux/SidebarSlice";
 import { useNotificationsWebSocket } from "@/hooks/useNotifications";
+import { useGetTotalSchoolsQuery } from "@/app/Dashboard/api/dashboardApi";
+import Spinner from "./spinner";
 
 const NavBar = () => {
+
+  const [isVerified, setIsVerified] = useState(false);
+  const token = Cookies.get("token") || "";
+  const router = useRouter();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const isSideBarOpen = useSelector(
     (state: RootState) => state.sidebar.isSideBarOpen
   );
-  console.log("isSideBarOpen: ", isSideBarOpen);
+  // To Check the user verified, if it super admin or not, using endpoint that can super admin only access it, if it success that mean he is super admin, if it !success that mean this is not super admin.
+  const { isLoading, isSuccess } = useGetTotalSchoolsQuery(token);
 
-  const token = Cookies.get("token") || "";
+  useEffect(() => {
+    if (!isLoading) {
+      if (isSuccess) {
+        setIsVerified(true);
+      } else {
+        Cookies.remove("token");
+        router.push("/login");
+      }
+    }
+  }, [isLoading, isSuccess, router]);
+
   const [pathname, setPathname] = useState("");
   const [isLoginPage, setIsLoginPage] = useState(true);
   const [small, setSmall] = useState(false);
@@ -48,9 +65,6 @@ const NavBar = () => {
   const { notificationsCount, isConnected } = useNotificationsWebSocket(
     profileDataWithId?.data?.id
   );
-  // console.log("👾 ~ NavBar ~ profileDataWithId:", profileDataWithId?.data?.id)
-
-  const router = useRouter();
 
   useEffect(() => {
     if (!languageFromCookies || languageFromCookies === "") {
@@ -394,6 +408,14 @@ const NavBar = () => {
       href: "/curriculum-management",
     },
   ];
+
+  if (!isVerified) {
+    return (
+      <div className="mt-96 h-full">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <>

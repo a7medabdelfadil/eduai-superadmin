@@ -89,9 +89,9 @@ const Notifies = () => {
 
     return (
       <>
-          <div className="grid h-full w-full items-center justify-center gap-3 rounded-xl bg-white p-5">
+          <div className="grid h-full w-full items-center justify-center gap-3 rounded-xl bg-white dark:bg-[#141414] p-5">
             <div className="mb-5 flex w-full justify-start">
-              <h1 className="text-[22px] font-semibold text-black">
+              <h1 className="text-[22px] font-semibold text-black dark:text-white">
               Notifications
               </h1>
             </div>
@@ -100,7 +100,7 @@ const Notifies = () => {
               <div
                 key={`${notifi.id}-${index}`}
                 className={`flex gap-2 ${
-                  notifi.read ? "bg-white" : "bg-[#daeafb]"
+                  notifi.read ? "bg-white dark:bg-[#185aa08a] " : "bg-[#daeafb] dark:bg-[#123963]"
                 } h-full w-[1000px] rounded-lg p-3 shadow-xl max-[1340px]:w-[700px] max-[1040px]:w-[500px] max-[550px]:w-[300px]`}
               >
                 <div>

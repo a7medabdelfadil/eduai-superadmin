@@ -550,7 +550,7 @@ const EditSchool = () => {
                     {successCurriculum && (
                       <>
                         <option className="hidden">Select curriculum</option>
-                        {Object.values(dataCurriculum.data).map(
+                        {Object.values(dataCurriculum?.data).map(
                           (value: any) => (
                             <option key={value} value={value}>
                               {value}

@@ -22,6 +22,7 @@ function Page() {
     const [registrationType, setRegistrationType] = useState("")
     const [language, setLanguage] = useState("")
     const [eduSystemId, setEduSystemId] = useState("")
+    console.log("👾 ~ Page ~ eduSystemId:", eduSystemId)
     const [name_en, setName_en] = useState("")
     const [name_ar, setName_ar] = useState("")
     const [name_fr, setName_fr] = useState("")

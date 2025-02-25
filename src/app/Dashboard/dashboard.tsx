@@ -8,22 +8,38 @@ import {
   useGetTotalSchoolsQuery,
 } from "./api/dashboardApi";
 import Spinner from "@/components/spinner";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const token = Cookies.get("token") || "";
-  const { data: dataTotalSchools, isLoading } = useGetTotalSchoolsQuery(token);
+  const router = useRouter();
+  const [isVerified, setIsVerified] = useState(false);
+
+  const { data: dataTotalSchools, isLoading, isSuccess } = useGetTotalSchoolsQuery(token);
+  console.log("👾 ~ Dashboard ~ isSuccess:", isSuccess)
+
   const { data: dataDemos } = useGetDemosQuery(token);
   const { data: dataSubscriptions } = useGetSubscriptionsQuery(token);
   const { data: dataNoActions } = useGetNoActionsQuery(token);
   const { data: dataAboutExpire } = useGetAboutExpireQuery(token);
+ 
+  useEffect(() => {
+    if (!isLoading) {
+      if (isSuccess) {
+        setIsVerified(true);
+      } else {
+        Cookies.remove("token");
+        router.push("/login");
+      }
+    }
+  }, [isLoading, isSuccess, router]);
 
+  if (!isVerified) {
+    return;
+  }
   return (
     <>
-      {isLoading ? (
-        <div className="mt-64">
-          <Spinner />
-        </div>
-      ) : (
         <div className="grid gap-8 mt-5 pr-8 max-[1024px]:pl-8 ">
           <div className="grid text-start">
             <h1 className="font-bold text-[28px] mb-2 font-sans text-[#041631] dark:text-white">
@@ -157,7 +173,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      )}
     </>
   );
 };

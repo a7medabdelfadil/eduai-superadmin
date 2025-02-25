@@ -69,7 +69,6 @@ const FirstStep: React.FC<FirstStepProps> = ({
   const { data: dataLang, isSuccess: successLanguage } = useGetLanguageQuery(token)
   const { data: dataRegistrationType, isSuccess: successRegistrationType } = useGetRegistrationTypeQuery(token)
   const { data: dataStudyLevel, isSuccess: successStudyLevel } = useGetStudyLevelQuery(token)
-  console.log('dataCountry', dataCountry);
   // Error Messages
   const [countryError, setCountryError] = useState("");
   const [eduSystemError, setEduSystemError] = useState("");

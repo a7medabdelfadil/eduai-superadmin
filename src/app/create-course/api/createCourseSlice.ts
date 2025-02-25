@@ -16,6 +16,15 @@ export const courseSlice = createApi({
                 }
             })
         }),
+        getCountryCode: builder.query({
+            query: (token: string) => ({
+                url: "public/enumeration/country-code",
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+        }),
         getEduSystem: builder.query({
             query: (token: string) => ({
                 url: "management/education-system/all?size=100&page=0",
@@ -96,6 +105,6 @@ export const courseSlice = createApi({
 })
 
 
-export const { useGetCountryQuery, useGetLanguageQuery , useGetRegistrationTypeQuery , useGetEducationLevelQuery , useGetEduSystemQuery , useAddCourseMutation , useAddLessonMutation , useGetStudyLevelQuery} = courseSlice
+export const { useGetCountryQuery, useGetCountryCodeQuery ,useGetLanguageQuery , useGetRegistrationTypeQuery , useGetEducationLevelQuery , useGetEduSystemQuery , useAddCourseMutation , useAddLessonMutation , useGetStudyLevelQuery} = courseSlice
 
 
