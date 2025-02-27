@@ -7,7 +7,6 @@ import {
   useGetSubscriptionsQuery,
   useGetTotalSchoolsQuery,
 } from "./api/dashboardApi";
-import Spinner from "@/components/spinner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 

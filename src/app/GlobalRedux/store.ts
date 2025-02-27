@@ -1,7 +1,7 @@
 "use client";
 import { configureStore } from "@reduxjs/toolkit";
 import { courseSlice } from "../create-course/api/createCourseSlice";
-import { feedbackSlice } from "../feedback/api/feedbackSlice"
+import { feedbackSlice } from "../feedback/api/feedbackSlice";
 import { findAccountSlice } from "../(auth)/forget-password/api/findAccountSlice";
 import { selectEmailSlice } from "../(auth)/otp/api/validateCode";
 import { loginSlice } from "../(auth)/login/api/loginSlice";
@@ -24,7 +24,9 @@ import { authSlice } from "./AuthSlice";
 import { sideBarSlice } from "./SidebarSlice";
 import { notificationsApi } from "../notifies/api/notifies";
 
-export const store = configureStore({
+// ✅ Create a function to initialize the store for testing
+export const setupStore = () =>
+  configureStore({
     reducer: { // RootReducer
         theme: ThemeSlice,
         auth: authSlice.reducer,
@@ -51,29 +53,31 @@ export const store = configureStore({
         [notificationsApi.reducerPath]: notificationsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().
-            concat(loginSlice.middleware).
-            concat(courseSlice.middleware).
-            concat(feedbackSlice.middleware).
-            concat(findAccountSlice.middleware).
-            concat(selectEmailSlice.middleware).
-            concat(AllCoursesSlice.middleware).
-            concat(backupsApis.middleware).
-            concat(schoolsApis.middleware).
-            concat(createSchoolSlice.middleware).
-            concat(dashboardSlice.middleware).
-            concat(systemsApis.middleware).
-            concat(adminAPi.middleware).
-            concat(editAdminApi.middleware).
-            concat(SchoolPlansApi.middleware).
-            concat(curriculumApis.middleware).
-            concat(ResetPassword.middleware).
-            concat(createSchoolPlanApi.middleware).
-            concat(profileApis.middleware).
-            concat(createSchoolPermissionsSlice.middleware).
-            concat(notificationsApi.middleware) 
+        getDefaultMiddleware()
+            .concat(loginSlice.middleware)
+            .concat(courseSlice.middleware)
+            .concat(feedbackSlice.middleware)
+            .concat(findAccountSlice.middleware)
+            .concat(selectEmailSlice.middleware)
+            .concat(AllCoursesSlice.middleware)
+            .concat(backupsApis.middleware)
+            .concat(schoolsApis.middleware)
+            .concat(createSchoolSlice.middleware)
+            .concat(dashboardSlice.middleware)
+            .concat(systemsApis.middleware)
+            .concat(adminAPi.middleware)
+            .concat(editAdminApi.middleware)
+            .concat(SchoolPlansApi.middleware)
+            .concat(curriculumApis.middleware)
+            .concat(ResetPassword.middleware)
+            .concat(createSchoolPlanApi.middleware)
+            .concat(profileApis.middleware)
+            .concat(createSchoolPermissionsSlice.middleware)
+            .concat(notificationsApi.middleware),
+  });
 
-});
+// ✅ Keep the default store for production use
+export const store = setupStore();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

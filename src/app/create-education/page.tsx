@@ -12,7 +12,7 @@ import { useGetCountryQuery } from '../create-course/api/createCourseSlice';
 import Spinner from '@/components/spinner';
 import Container from '@/components/Container';
 
-function Page() {
+function CreateEducation() {
 
     const token = Cookies.get('token') || "";
     const lang = Cookies.get('lang') || "";
@@ -189,4 +189,4 @@ function Page() {
     )
 }
 
-export default Page
+export default CreateEducation
