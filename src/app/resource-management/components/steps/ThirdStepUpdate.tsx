@@ -282,8 +282,6 @@ ThirdStepUpdate: React.FC<ThirdStepProps> = ({
           formData.append('files', file);
         });
   
-        console.log("👾 ~ filesMany.forEach ~ filesMany:", filesMany);
-  
         // Make the API call to upload files
         await uploadLessonFiles({ token, data: formData, lessonId: idLesson }).unwrap();
         console.log("👾 ~ handleSubmitMany ~ idLesson:", idLesson);
@@ -738,10 +736,11 @@ ThirdStepUpdate: React.FC<ThirdStepProps> = ({
                   </button>
 
                   <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    className={`bg-blue-500 ${isLoading ? "opacity-50 cursor-not-allowed" : ""} hover:bg-blue-600 text-white px-4 py-2 rounded-lg`}
                     onClick={handleSubmitMany}
+                    disabled={isLoading}
                   >
-                    Upload
+                    {isLoading ? "Uploading": "Upload"}
                   </button>
                 </div>
               </div>

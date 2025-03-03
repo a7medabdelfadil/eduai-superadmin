@@ -119,7 +119,13 @@ const NavBar = () => {
     }
   }, [pathname]);
 
+  /**
+   * Open the sidebar when the user clicks on the hamburger menu icon.
+   */
   const OpenSideBar = () => {
+    /**
+     * Toggle the isOpen state and call the openSideBar action to update the Redux state.
+     */
     setIsOpen(!isOpen);
     dispatch(openSideBar());
   };
