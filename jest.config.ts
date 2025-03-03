@@ -4,16 +4,12 @@ const config: JestConfigWithTsJest = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
   transform: {
-    "^.+\\.(ts|tsx|js|jsx)$": [
-      "ts-jest",
-      { tsconfig: "<rootDir>/tsconfig.json", isolatedModules: true },
-    ],
+    "^.+\\.(ts|tsx)$": ["ts-jest", { tsconfig: "tsconfig.json" }],
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy", 
   },
-  transformIgnorePatterns: ["<rootDir>/node_modules/(?!msw)"], 
+  transformIgnorePatterns: ["<rootDir>/node_modules/"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 };
 
