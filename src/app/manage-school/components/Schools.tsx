@@ -101,7 +101,7 @@ const Schools: React.FC<Props> = ({ data, search, setSearch, isLoading, setCurre
                                             </td>
 
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <Link href={`manage-school/features/${item.id}`} className="font-medium text-blue-600 hover:underline">Feature</Link>
+                                                <Link href={`manage-school/view-features/${item.id}`} className="font-medium text-blue-600 hover:underline">View Feature</Link>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <Link href={`/manage-school/admin/${item.id}`} className="font-medium text-blue-600 hover:underline">View</Link>

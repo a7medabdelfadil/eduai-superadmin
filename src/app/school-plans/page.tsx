@@ -24,8 +24,9 @@ const PlanSchool = () => {
     isSuccess,
     isLoading,
   } = useGetAllSchoolPlansQuery({ token, page: currentPage });
+  console.log("👾 ~ PlanSchool ~ dataSchoolPlans:", dataSchoolPlans)
   const [updateStatusOfSchoolPlan, { data }] =
-    useUpdateStatusOfSchoolPlanMutation();
+  useUpdateStatusOfSchoolPlanMutation();
 
   const handlePageClick = (selectedPage: any) => {
     setCurrentPage(selectedPage.selected);

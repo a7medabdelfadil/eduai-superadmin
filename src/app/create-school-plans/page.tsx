@@ -85,11 +85,10 @@ const CreateSchoolPlans = () => {
     }
 
     const body = {
-      name: "test",
-      daysCount: 1,
-      permissions: ["ADMIN"],
+      name,
+      daysCount,
+      permissions,
     };
-    console.log("👾 ~ handleSend ~ body:", body)
 
     const res = await addSchoolPlan({ token, body }).unwrap();
     if (res.success) {

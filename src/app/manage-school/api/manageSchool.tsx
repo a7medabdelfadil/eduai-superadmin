@@ -54,8 +54,18 @@ export const schoolsApis = createApi({
             }),
             invalidatesTags: ["schools"]
         }),
-       
+        updatePermissionCost: builder.mutation({
+            query: ({ token, body }: { token: string, body: { permissionName: string, newCost: number } }) => ({
+                url: `management/school/plan/permissionCost`,
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: body
+            }),
+            invalidatesTags: ["schools"]
+        }),
     })
 })
 
-export const { useGetAllSchoolsQuery, useGetAllSchoolsWithSearchQuery , useGetSchoolByIdQuery , useUpdateSchoolMutation } = schoolsApis
+export const { useGetAllSchoolsQuery, useGetAllSchoolsWithSearchQuery , useGetSchoolByIdQuery , useUpdateSchoolMutation, useUpdatePermissionCostMutation } = schoolsApis

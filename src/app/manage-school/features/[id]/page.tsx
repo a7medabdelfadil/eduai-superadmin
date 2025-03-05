@@ -5,7 +5,6 @@ import Spinner from "@/components/spinner";
 import {
   useGetSchoolPermissionByIdQuery,
   useGetSchoolPermissionsQuery,
-  useGetSchoolPlansQuery,
   useSetSchoolPermissionByIdMutation,
 } from "./api/schoolPermissions";
 import { useParams, useRouter } from "next/navigation";
@@ -37,13 +36,13 @@ const Features = () => {
   const handleAddPermission = (permissionName: string, cost: number) => {
     if (!selectedItems.includes(permissionName)) {
       setSelectedItems((prev) => [...prev, permissionName]);
-      setSelectedItemsCost((prev) => prev + cost); // إضافة التكلفة
+      setSelectedItemsCost((prev) => prev + cost); 
     }
   };
 
   const handleRemoveItem = (itemName: string, cost: number) => {
     setSelectedItems((prev) => prev.filter((item) => item !== itemName));
-    setSelectedItemsCost((prev) => prev - cost); // خصم التكلفة
+    setSelectedItemsCost((prev) => prev - cost); 
   };
 
   const { data: schoolPermissionData, refetch } =
@@ -75,7 +74,7 @@ const Features = () => {
       await setSchoolPermissionById({ token, id, body }).unwrap();
       toast.success("Permissions updated successfully!");
       refetch();
-      router.push(`/manage-school`);
+      router.push(`/manage-school/view-features/${id}`);
     } catch (err) {
       toast.error("Failed to update permissions");
     }
@@ -86,12 +85,12 @@ const Features = () => {
     toast.success("Operation cancelled");
   };
 
-  const handleViewFeatures = () => {
-    router.push("/manage-school/view-features/" + id);
-  };
+
 
   const { data: schoolData } = useGetSchoolByIdQuery({ token, id });
-
+  const handleEditFeatures = () => {
+    router.push("/manage-school/edit-features");
+  };
   return (
     <Container className="mt-[70px] px-4 sm:px-6 lg:px-8 min-h-screen">
       {features && features.length > 0 ? (
@@ -99,11 +98,11 @@ const Features = () => {
           <div className="flex flex-wrap justify-between items-center rounded-t-xl pb-10 text-xl sm:text-2xl font-bold dark:text-white">
             <p className="w-full sm:w-auto">{`Edit ${schoolData?.data?.name} Features`}</p>
             <button
-              onClick={handleViewFeatures}
-              className="px-4 py-2.5 rounded-xl bg-[#3E5AF0] hover:bg-[#4a5cc5] hover:shadow-xl text-white font-bold text-[16px] sm:text-[18px] w-full sm:w-[200px] mt-4 sm:mt-0 ease-in duration-300"
-            >
-              View Features
-            </button>
+        onClick={handleEditFeatures}
+        className="px-4 py-2.5 rounded-xl bg-[#3E5AF0] hover:bg-[#4a5cc5] hover:shadow-xl text-white font-bold text-[16px] sm:text-[18px] w-fit mt-4 sm:mt-0 ease-in duration-300"
+      >
+        Edit The Features
+      </button>
           </div>
 
           <div>
