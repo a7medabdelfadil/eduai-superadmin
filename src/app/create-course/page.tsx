@@ -49,14 +49,9 @@ function Page() {
       description_ar: description_ar,
       description_fr: description_fr,
       prerequisiteIds: prerequisites, // list of courses ids, can be an empty list
-      // coefficient: 2, // optional
-      // semesterName: "FALL", // optional // Get possible values from: /api/v1/public/enumeration/semester-name
-      // secondarySchoolDepartment: "SCIENTIFIC", // optional // Get possible values from: /api/v1/public/enumeration/secondary-school-department
-      // subDepartment: "PHYSICAL_SCIENCES", // optional // Get possible values from: /api/v1/public/enumeration/secondary-school-sub-department
     };
   
     try {
-      // Await the promise returned by addCourse
       const response = await addCourse({ token, data: objectReq }).unwrap();
       toast.success("Course added successfully!");
     } catch (error) {

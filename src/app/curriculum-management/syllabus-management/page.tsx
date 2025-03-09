@@ -1,9 +1,9 @@
 import Container from "@/components/Container";
 
 const SyllabusManagement = () => {
-    return (
-      <>
-<Container className="mt-12">
+  return (
+    <>
+      <Container className="mt-12">
         <div className="flex w-full justify-between px-5 text-center max-[502px]:grid max-[502px]:justify-center">
           <div className="mb-3">
             <label htmlFor="icon" className="sr-only">
@@ -43,22 +43,22 @@ const SyllabusManagement = () => {
           </div>
         </div>
         <div className="flex h-full w-full items-center justify-center overflow-hidden p-5">
-        <div className="grid h-full w-full rounded-xl bg-white card">
-        <div className="flex h-[60px] w-full items-center justify-evenly rounded-t-xl bg-[#DCEBFB] dark:bg-[#06203C] p-2 pl-8">
-        <div className="w-full text-start">
-                  <p className="font-semibold">Course Title:</p>
-                </div>
-                <div className="w-full text-center">
-                  <p className="font-semibold">Course Number:</p>
-                </div>
+          <div className="grid h-full w-full rounded-xl bg-white card">
+            <div className="flex h-[60px] w-full items-center justify-evenly rounded-t-xl bg-[#DCEBFB] dark:bg-[#06203C] p-2 pl-8">
+              <div className="w-full text-start">
+                <p className="font-semibold">Course Title:</p>
               </div>
-              <div className="pl-8">
-                <p className="font-semibold">Course Description:</p>
+              <div className="w-full text-center">
+                <p className="font-semibold">Course Number:</p>
               </div>
-              <div className="overflow-auto">
-                <div className="relative overflow-auto">
+            </div>
+            <div className="pl-8">
+              <p className="font-semibold">Course Description:</p>
+            </div>
+            <div className="overflow-auto">
+              <div className="relative overflow-auto">
                 <table className="w-full overflow-x-auto text-left bg-white card  text-sm text-gray-500 rtl:text-right">
-                <thead>
+                  <thead>
                     <tr className="font-semibold text-black ">
                       <th
                         scope="row"
@@ -75,7 +75,7 @@ const SyllabusManagement = () => {
                       </td>
                     </tr>
                   </thead>
-  
+
                   <tbody className="bg-[#ebeef2] card text-xs uppercase text-gray-700">
                     <tr>
                       <th
@@ -98,39 +98,38 @@ const SyllabusManagement = () => {
                       ></th>
                     </tr>
                   </tbody>
-                    <tbody>
-                      <tr className="bg-white card hover:bg-gray-50">
-                        <th
-                          scope="row"
-                          className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4 font-medium text-gray-900 dark:text-white"
-                          >
-                          Cluster 1 :
-                        </th>
-                        <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
+                  <tbody>
+                    <tr className="bg-white card hover:bg-gray-50">
+                      <th
+                        scope="row"
+                        className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4 font-medium text-gray-900 dark:text-white"
+                      >
+                        Cluster 1 :
+                      </th>
                       <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
-                      <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
-                    </tr>
-                      <tr className="bg-white card hover:bg-gray-50">
-                        <th
-                          scope="row"
-                          className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4 font-medium text-gray-900 dark:text-white"
-                          >
-                          Cluster 2 :
-                        </th>
-                        <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
                       <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
                       <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
                     </tr>
-                    </tbody>
-                  </table>
-                </div>
+                    <tr className="bg-white card hover:bg-gray-50">
+                      <th
+                        scope="row"
+                        className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4 font-medium text-gray-900 dark:text-white"
+                      >
+                        Cluster 2 :
+                      </th>
+                      <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
+                      <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
+                      <td className="whitespace-nowrap border-2 border-[#dcebfb] dark:border-gray-800 px-6 py-4"></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        </Container>
-      </>
-    );
-  };
-  
-  export default SyllabusManagement;
-  
+        </div>
+      </Container>
+    </>
+  );
+};
+
+export default SyllabusManagement;
