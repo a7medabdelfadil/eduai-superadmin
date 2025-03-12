@@ -2,9 +2,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import Cookies from "js-cookie";
-import EmptyAdmins from "../manage-school/admin/[id]/components/EmptyAdmins";
 import {
   useGetAllSchoolPlansQuery,
   useUpdateStatusOfSchoolPlanMutation,
