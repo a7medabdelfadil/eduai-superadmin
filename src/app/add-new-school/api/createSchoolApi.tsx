@@ -82,9 +82,14 @@ export const createSchoolSlice = createApi({
                 body: data,
             }),
         }),
-       
+        getAllCurrencies: builder.query({
+            query: () => ({
+                url: "public/enumeration/currency",
+                method: "GET",
+            }),
+        }),
     })
 })
 
 
-export const { useGetAllSchoolsQuery, useGetCurriculumQuery , useGetTypeQuery , useGetLanguagesQuery , useGetLevelsQuery , useGetEducationsQuery , useGetRegionQuery , useAddSchoolMutation } = createSchoolSlice
+export const { useGetAllSchoolsQuery, useGetCurriculumQuery , useGetTypeQuery , useGetLanguagesQuery , useGetLevelsQuery , useGetEducationsQuery , useGetRegionQuery , useAddSchoolMutation, useGetAllCurrenciesQuery } = createSchoolSlice

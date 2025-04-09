@@ -4,6 +4,7 @@ import { Select } from "flowbite-react";
 import style from "./style.module.css";
 import {
   useAddSchoolMutation,
+  useGetAllCurrenciesQuery,
   useGetCurriculumQuery,
   useGetEducationsQuery,
   useGetLanguagesQuery,
@@ -22,6 +23,7 @@ const AddNewSchool = () => {
   const router = useRouter();
   const token = Cookies.get("token") || "";
   const lang = Cookies.get("lang") || "";
+
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [about, setAbout] = useState("");
@@ -42,6 +44,9 @@ const AddNewSchool = () => {
   const [workDayStartTime, setWorkDayStartTime] = useState("");
   const [workDayEndTime, setWorkDayEndTime] = useState("");
   const [numberOfLegalAbsenceDays, setNumberOfLegalAbsenceDays] = useState("");
+  const [currencyForSalaries, setCurrencyForSalaries] = useState("");
+  const [currencyForInvoices, setCurrencyForInvoices] = useState("");
+
   const { isSuccess: successCurriculum, data: dataCurriculum } =
     useGetCurriculumQuery(token);
   const { isSuccess: successType, data: dataType } = useGetTypeQuery(token);
@@ -53,11 +58,9 @@ const AddNewSchool = () => {
     useGetEducationsQuery(token);
   const { isSuccess: successRegions, data: dataRegions } =
     useGetRegionQuery(token);
+  const { data: dataCurrencies } = useGetAllCurrenciesQuery(token);
   const [addSchool, { error, isError, isSuccess }] = useAddSchoolMutation();
-  const [openLanguages, setOpenLanguages] = useState(false);
-  const [openLevels, setOpenLevels] = useState(false);
-  const [openEducations, setOpenEducations] = useState(false);
-
+ 
   // Error Messages
   const [nameError, setNameError] = useState("");
   const [codeError, setCodeError] = useState("");
@@ -85,178 +88,195 @@ const AddNewSchool = () => {
   const [errorRegionId, setErrorRegionId] = useState("");
   const [errorNumberOfLegalAbsenceDays, setErrorNumberOfLegalAbsenceDays] =
     useState("");
+  const [currencyForSalariesError, setCurrencyForSalariesError] = useState("");
+  const [currencyForInvoicesError, setCurrencyForInvoicesError] = useState("");
 
-    const validateInputs = () => {
-      let isValid = true;
-    
-      // Reset all error messages
-      const errorSetters = [
-        setNameError,
-        setCodeError,
-        setAboutError,
-        setThemeError,
-        setCurriculumError,
-        setTypeError,
-        setLanguagesError,
-        setLevelsError,
-        setEducationsError,
-        setErrorFallSemesterStartDate,
-        setErrorFallSemesterEndDate,
-        setErrorSpringSemesterStartDate,
-        setErrorSpringSemesterEndDate,
-        setErrorSummerSemesterStartDate,
-        setErrorSummerSemesterEndDate,
-        setErrorEstablished,
-        setErrorWorkDayStartTime,
-        setErrorWorkDayEndTime,
-        setErrorRegionId,
-        setErrorNumberOfLegalAbsenceDays,
-      ];
-      errorSetters.forEach(setError => setError(""));
-    
-      // General validation helper
-      const validateRequiredField = (value: any, setErrorFunc: any, errorMsg: string) => {
-        if (!value || (typeof value === "string" && value.trim() === "")) {
-          setErrorFunc(errorMsg);
+  const validateInputs = () => {
+    let isValid = true;
+
+    // Reset all error messages
+    const errorSetters = [
+      setNameError,
+      setCodeError,
+      setAboutError,
+      setThemeError,
+      setCurriculumError,
+      setTypeError,
+      setLanguagesError,
+      setLevelsError,
+      setEducationsError,
+      setErrorFallSemesterStartDate,
+      setErrorFallSemesterEndDate,
+      setErrorSpringSemesterStartDate,
+      setErrorSpringSemesterEndDate,
+      setErrorSummerSemesterStartDate,
+      setErrorSummerSemesterEndDate,
+      setErrorEstablished,
+      setErrorWorkDayStartTime,
+      setErrorWorkDayEndTime,
+      setErrorRegionId,
+      setErrorNumberOfLegalAbsenceDays,
+      setCurrencyForSalariesError,
+      setCurrencyForInvoicesError,
+    ];
+    errorSetters.forEach((setError) => setError(""));
+
+    // General validation helper
+    const validateRequiredField = (
+      value: any,
+      setErrorFunc: any,
+      errorMsg: string
+    ) => {
+      if (!value || (typeof value === "string" && value.trim() === "")) {
+        setErrorFunc(errorMsg);
+        isValid = false;
+      }
+    };
+
+    // Validate required fields
+    validateRequiredField(name, setNameError, "School name is required");
+    validateRequiredField(code, setCodeError, "Code is required");
+    validateRequiredField(about, setAboutError, "About is required");
+    validateRequiredField(theme, setThemeError, "Theme is required");
+    validateRequiredField(
+      curriculum,
+      setCurriculumError,
+      "Curriculum is required"
+    );
+    validateRequiredField(type, setTypeError, "Type is required");
+    validateRequiredField(regionId, setErrorRegionId, "Region is required");
+    validateRequiredField(
+      established,
+      setErrorEstablished,
+      "This field is required"
+    );
+    validateRequiredField(
+      workDayStartTime,
+      setErrorWorkDayStartTime,
+      "This field is required"
+    );
+    validateRequiredField(
+      workDayEndTime,
+      setErrorWorkDayEndTime,
+      "This field is required"
+    );
+    validateRequiredField(
+      currencyForSalaries,
+      setCurrencyForSalariesError,
+      "Currency for salaries is required"
+    );
+    validateRequiredField(
+      currencyForInvoices,
+      setCurrencyForInvoicesError,
+      "Currency for invoices is required"
+    );
+
+    if (languages.length === 0) {
+      setLanguagesError("At least one language is required");
+      isValid = false;
+    }
+    if (levels.length === 0) {
+      setLevelsError("At least one level is required");
+      isValid = false;
+    }
+    if (educations.length === 0) {
+      setEducationsError("At least one education system is required");
+      isValid = false;
+    }
+
+    // Validate number of legal absence days
+    const parsedNumberOfLegalAbsenceDays = parseFloat(numberOfLegalAbsenceDays);
+    if (!numberOfLegalAbsenceDays) {
+      setErrorNumberOfLegalAbsenceDays("This field is required");
+      isValid = false;
+    } else if (isNaN(parsedNumberOfLegalAbsenceDays)) {
+      setErrorNumberOfLegalAbsenceDays("Must be a number");
+      isValid = false;
+    }
+
+    // Validate establishment year
+    const now = new Date();
+    const startYear = new Date(established).getFullYear();
+    if (startYear < 1800 || startYear > now.getFullYear()) {
+      setErrorEstablished("Invalid establishment date");
+      isValid = false;
+    }
+
+    // Validate semester dates (fixing MM/DD/YYYY issues)
+    const parseDate = (dateStr: string) => {
+      const [month, day, year] = dateStr.split("/").map(Number);
+      return new Date(year, month - 1, day); // Month is 0-based in JS
+    };
+
+    const semesterDates = [
+      {
+        start: fallSemesterStartDate,
+        end: fallSemesterEndDate,
+        setError: setErrorFallSemesterEndDate,
+      },
+      {
+        start: springSemesterStartDate,
+        end: springSemesterEndDate,
+        setError: setErrorSpringSemesterEndDate,
+      },
+      {
+        start: summerSemesterStartDate,
+        end: summerSemesterEndDate,
+        setError: setErrorSummerSemesterEndDate,
+      },
+    ];
+
+    semesterDates.forEach(({ start, end, setError }) => {
+      if (!start || !end) {
+        setError("This field is required");
+        isValid = false;
+      } else {
+        const startDate = parseDate(start);
+        const endDate = parseDate(end);
+
+        if (startDate >= endDate) {
+          setError("End date must be after start date");
           isValid = false;
         }
-      };
-    
-      // Validate required fields
-      validateRequiredField(name, setNameError, "School name is required");
-      validateRequiredField(code, setCodeError, "Code is required");
-      validateRequiredField(about, setAboutError, "About is required");
-      validateRequiredField(theme, setThemeError, "Theme is required");
-      validateRequiredField(curriculum, setCurriculumError, "Curriculum is required");
-      validateRequiredField(type, setTypeError, "Type is required");
-      validateRequiredField(regionId, setErrorRegionId, "Region is required");
-      validateRequiredField(established, setErrorEstablished, "This field is required");
-      validateRequiredField(workDayStartTime, setErrorWorkDayStartTime, "This field is required");
-      validateRequiredField(workDayEndTime, setErrorWorkDayEndTime, "This field is required");
-    
-      if (languages.length === 0) {
-        setLanguagesError("At least one language is required");
-        isValid = false;
       }
-      if (levels.length === 0) {
-        setLevelsError("At least one level is required");
-        isValid = false;
-      }
-      if (educations.length === 0) {
-        setEducationsError("At least one education system is required");
-        isValid = false;
-      }
-    
-      // Validate number of legal absence days
-      const parsedNumberOfLegalAbsenceDays = parseFloat(numberOfLegalAbsenceDays);
-      if (!numberOfLegalAbsenceDays) {
-        setErrorNumberOfLegalAbsenceDays("This field is required");
-        isValid = false;
-      } else if (isNaN(parsedNumberOfLegalAbsenceDays)) {
-        setErrorNumberOfLegalAbsenceDays("Must be a number");
-        isValid = false;
-      }
-    
-      // Validate establishment year
-      const now = new Date();
-      const startYear = new Date(established).getFullYear();
-      if (startYear < 1800 || startYear > now.getFullYear()) {
-        setErrorEstablished("Invalid establishment date");
-        isValid = false;
-      }
-    
-      // Validate semester dates (fixing MM/DD/YYYY issues)
-      const parseDate = (dateStr: string) => {
-        const [month, day, year] = dateStr.split("/").map(Number);
-        return new Date(year, month - 1, day); // Month is 0-based in JS
-      };
-    
-      const semesterDates = [
-        { start: fallSemesterStartDate, end: fallSemesterEndDate, setError: setErrorFallSemesterEndDate },
-        { start: springSemesterStartDate, end: springSemesterEndDate, setError: setErrorSpringSemesterEndDate },
-        { start: summerSemesterStartDate, end: summerSemesterEndDate, setError: setErrorSummerSemesterEndDate },
-      ];
-    
-      semesterDates.forEach(({ start, end, setError }) => {
-        if (!start || !end) {
-          setError("This field is required");
-          isValid = false;
-        } else {
-          const startDate = parseDate(start);
-          const endDate = parseDate(end);
-    
-          if (startDate >= endDate) {
-            setError("End date must be after start date");
-            isValid = false;
-          }
-        }
-      });
-    
-      // Validate semester sequence
-      const fallEnd = parseDate(fallSemesterEndDate);
-      const springStart = parseDate(springSemesterStartDate);
-      const springEnd = parseDate(springSemesterEndDate);
-      const summerStart = parseDate(summerSemesterStartDate);
-    
-      if (fallEnd >= springStart) {
-        setErrorSpringSemesterStartDate("Spring semester must start after fall semester ends");
-        isValid = false;
-      }
-      if (springEnd >= summerStart) {
-        setErrorSummerSemesterStartDate("Summer semester must start after spring semester ends");
-        isValid = false;
-      }
-    
-      // Validate work hours
-      if (workDayStartTime && workDayEndTime) {
-        const [startHours, startMinutes] = workDayStartTime.split(":").map(Number);
-        const [endHours, endMinutes] = workDayEndTime.split(":").map(Number);
-    
-        if (startHours > endHours || (startHours === endHours && startMinutes >= endMinutes)) {
-          setErrorWorkDayEndTime("End time must be after start time");
-          isValid = false;
-        }
-      }
-    
-      return isValid;
-    };    
+    });
 
-  const toggleDropdown = () => {
-    setOpenLanguages(!openLanguages);
-    setOpenLevels(false);
-    setOpenEducations(false);
-  };
-  const toggleDropdownLevels = () => {
-    setOpenLevels(!openLevels);
-    setOpenEducations(false);
-    setOpenLanguages(false);
-  };
-  const toggleDropdownEducations = () => {
-    setOpenEducations(!openEducations);
-    setOpenLanguages(false);
-    setOpenLevels(false);
-  };
+    // Validate semester sequence
+    const fallEnd = parseDate(fallSemesterEndDate);
+    const springStart = parseDate(springSemesterStartDate);
+    const springEnd = parseDate(springSemesterEndDate);
+    const summerStart = parseDate(summerSemesterStartDate);
 
-  const handleCheckboxChange = (value: string) => {
-    setLanguages((prev) =>
-      prev.includes(value)
-        ? prev.filter((lang) => lang !== value)
-        : [...prev, value]
-    );
-  };
-  const handleCheckboxChangeLevels = (value: string) => {
-    setLevels((prev) =>
-      prev.includes(value)
-        ? prev.filter((level) => level !== value)
-        : [...prev, value]
-    );
-  };
-  const handleCheckboxChangeEducations = (value: string) => {
-    setEducations((prev) =>
-      prev.includes(value)
-        ? prev.filter((education) => education !== value)
-        : [...prev, value]
-    );
+    if (fallEnd >= springStart) {
+      setErrorSpringSemesterStartDate(
+        "Spring semester must start after fall semester ends"
+      );
+      isValid = false;
+    }
+    if (springEnd >= summerStart) {
+      setErrorSummerSemesterStartDate(
+        "Summer semester must start after spring semester ends"
+      );
+      isValid = false;
+    }
+
+    // Validate work hours
+    if (workDayStartTime && workDayEndTime) {
+      const [startHours, startMinutes] = workDayStartTime
+        .split(":")
+        .map(Number);
+      const [endHours, endMinutes] = workDayEndTime.split(":").map(Number);
+
+      if (
+        startHours > endHours ||
+        (startHours === endHours && startMinutes >= endMinutes)
+      ) {
+        setErrorWorkDayEndTime("End time must be after start time");
+        isValid = false;
+      }
+    }
+
+    return isValid;
   };
 
   const formatDate = (dateString: string) => {
@@ -268,33 +288,6 @@ const AddNewSchool = () => {
     }
     return "";
   };
-
-  const data = {
-    name,
-    about,
-    code,
-    theme,
-    curriculum,
-    type,
-    languages,
-    stages: levels,
-    educationSystemsIds: educations,
-    semesterDate: {
-      fallSemesterStartDate,
-      fallSemesterEndDate,
-      springSemesterStartDate,
-      springSemesterEndDate,
-      summerSemesterStartDate,
-      summerSemesterEndDate,
-    },
-    established,
-    numberOfLegalAbsenceDays,
-    workDayStartTime,
-    workDayEndTime,
-    regionId,
-  };
-
-  console.log("school data: ", data);
 
   const handleSend = async (e: any) => {
     e.preventDefault();
@@ -313,7 +306,9 @@ const AddNewSchool = () => {
       !languages.length ||
       !levels.length ||
       !educations.length ||
-      !regionId
+      !regionId ||
+      !currencyForSalaries ||
+      !currencyForInvoices
     ) {
       toast.error("Please fill out all required fields.");
       return;
@@ -342,9 +337,9 @@ const AddNewSchool = () => {
       workDayStartTime,
       workDayEndTime,
       regionId,
+      currencyForSalaries,
+      currencyForInvoices,
     };
-
-    console.log("school data: ", data);
 
     try {
       await addSchool({ token, data }).unwrap();
@@ -353,6 +348,7 @@ const AddNewSchool = () => {
       toast.error("Failed to add school. Please try again.");
     }
   };
+
   useEffect(() => {
     if (isError) {
       if (error && "data" in error && (error as FetchBaseQueryError).data) {
@@ -946,6 +942,64 @@ const AddNewSchool = () => {
                   <p className="text-red-600">
                     {errorNumberOfLegalAbsenceDays}
                   </p>
+                )}
+              </div>
+              <div>
+                <label
+                  className="mb-3 inline-block md:text-lg capitalize font-medium"
+                  htmlFor="currencyForSalaries"
+                >
+                  Currency for Salaries{" "}
+                  <span className="text-[#367AFF] text-xl">*</span>
+                </label>
+                <Select
+                  value={currencyForSalaries}
+                  onChange={(e) => setCurrencyForSalaries(e.target.value)}
+                  className={`${style.selectForm}`}
+                  id="currencyForSalaries"
+                >
+                  <option className="hidden">Select Currency</option>
+                  {dataCurrencies &&
+                    Object.entries(dataCurrencies?.data || {}).map(
+                      ([code, name]) => (
+                        <option key={code} value={code}>
+                          {name as string}
+                        </option>
+                      )
+                    )}
+                </Select>
+
+                {currencyForSalariesError && (
+                  <p className="text-red-600">{currencyForSalariesError}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  className="mb-3 inline-block md:text-lg capitalize font-medium"
+                  htmlFor="currencyForInvoices"
+                >
+                  Currency for Invoices{" "}
+                  <span className="text-[#367AFF] text-xl">*</span>
+                </label>
+                <Select
+                  value={currencyForInvoices}
+                  onChange={(e) => setCurrencyForInvoices(e.target.value)}
+                  className={`${style.selectForm}`}
+                  id="currencyForInvoices"
+                >
+                  <option className="hidden">Select Currency</option>
+                  {dataCurrencies &&
+                    Object.entries(dataCurrencies?.data || {}).map(
+                      ([code, name]) => (
+                        <option key={code} value={code}>
+                          {name as string}
+                        </option>
+                      )
+                    )}
+                </Select>
+                {currencyForInvoicesError && (
+                  <p className="text-red-600">{currencyForInvoicesError}</p>
                 )}
               </div>
             </div>

@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { useParams, useRouter } from "next/navigation";
 import {
+  useGetAllCurrenciesQuery,
   useGetCurriculumQuery,
   useGetEducationsQuery,
   useGetLanguagesQuery,
@@ -46,6 +47,9 @@ const EditSchool = () => {
   const [workDayStartTime, setWorkDayStartTime] = useState("");
   const [workDayEndTime, setWorkDayEndTime] = useState("");
   const [numberOfLegalAbsenceDays, setNumberOfLegalAbsenceDays] = useState("");
+  const [currencyForSalaries, setCurrencyForSalaries] = useState("");
+  const [currencyForInvoices, setCurrencyForInvoices] = useState("");
+
   const { isSuccess: successCurriculum, data: dataCurriculum } =
     useGetCurriculumQuery(token);
   const { isSuccess: successType, data: dataType } = useGetTypeQuery(token);
@@ -61,6 +65,7 @@ const EditSchool = () => {
     token,
     id: params.id,
   });
+  const { data: dataCurrencies } = useGetAllCurrenciesQuery(token);
   const [updateSchool, { error, isError, isSuccess, isLoading }] =
     useUpdateSchoolMutation();
   const [openLanguages, setOpenLanguages] = useState(false);
@@ -102,6 +107,9 @@ const EditSchool = () => {
       setNumberOfLegalAbsenceDays(
         dataSchool.data.numberOfLegalAbsenceDays?.toString() || ""
       );
+      setCurrencyForSalaries(dataSchool.data.currencyForSalaries || "");
+      setCurrencyForInvoices(dataSchool.data.currencyForInvoices || "");
+
       // setEducations(["1"]); // TODO: remove it
     }
   }, [successSchool, dataSchool]);
@@ -133,6 +141,8 @@ const EditSchool = () => {
   const [errorRegionId, setErrorRegionId] = useState("");
   const [errorNumberOfLegalAbsenceDays, setErrorNumberOfLegalAbsenceDays] =
     useState("");
+  const [currencyForSalariesError, setCurrencyForSalariesError] = useState("");
+  const [currencyForInvoicesError, setCurrencyForInvoicesError] = useState("");
 
   const validateInputs = () => {
     // Reset all error messages
@@ -243,6 +253,15 @@ const EditSchool = () => {
     }
     if (!regionId) {
       setErrorRegionId("This field is required");
+      isValid = false;
+    }
+
+    if (!currencyForSalaries) {
+      setCurrencyForSalariesError("This field is required");
+      isValid = false;
+    }
+    if (!currencyForInvoices) {
+      setCurrencyForInvoicesError("This field is required");
       isValid = false;
     }
 
@@ -359,10 +378,11 @@ const EditSchool = () => {
       workDayStartTime: workDayStartTime,
       workDayEndTime: workDayEndTime,
       regionId: regionId,
+      currencyForSalaries,
+      currencyForInvoices,
     };
 
     try {
-      console.log("👾 ~ handleSend ~ data:", data);
       await updateSchool({ token, id: params.id, body: data }).unwrap();
 
       // Show success toast on successful update
@@ -960,6 +980,63 @@ const EditSchool = () => {
                     <p className="text-red-600">
                       {errorNumberOfLegalAbsenceDays}
                     </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    className="mb-3 inline-block md:text-lg capitalize font-medium"
+                    htmlFor="currencyForSalaries"
+                  >
+                    Currency for Salaries{" "}
+                    <span className="text-[#367AFF] text-xl">*</span>
+                  </label>
+                  <Select
+                    value={currencyForSalaries}
+                    onChange={(e) => setCurrencyForSalaries(e.target.value)}
+                    className={`${style.selectForm}`}
+                    id="currencyForSalaries"
+                  >
+                    <option className="hidden">Select Currency</option>
+                    {dataCurrencies &&
+                      Object.entries(dataCurrencies?.data || {}).map(
+                        ([code, name]) => (
+                          <option key={code} value={code}>
+                            {name as string}
+                          </option>
+                        )
+                      )}
+                  </Select>
+                  {currencyForSalariesError && (
+                    <p className="text-red-600">{currencyForSalariesError}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    className="mb-3 inline-block md:text-lg capitalize font-medium"
+                    htmlFor="currencyForInvoices"
+                  >
+                    Currency for Invoices{" "}
+                    <span className="text-[#367AFF] text-xl">*</span>
+                  </label>
+                  <Select
+                    value={currencyForInvoices}
+                    onChange={(e) => setCurrencyForInvoices(e.target.value)}
+                    className={`${style.selectForm}`}
+                    id="currencyForInvoices"
+                  >
+                    <option className="hidden">Select Currency</option>
+                    {dataCurrencies &&
+                      Object.entries(dataCurrencies?.data || {}).map(
+                        ([code, name]) => (
+                          <option key={code} value={code}>
+                            {name as string}
+                          </option>
+                        )
+                      )}
+                  </Select>
+                  {currencyForInvoicesError && (
+                    <p className="text-red-600">{currencyForInvoicesError}</p>
                   )}
                 </div>
               </div>

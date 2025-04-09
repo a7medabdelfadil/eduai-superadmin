@@ -18,6 +18,16 @@ export const backupsApis = createApi({
             }),
             providesTags: ['Backups'],
         }),
+        getAllVideos: builder.query({
+            query: (token) => ({
+                url: `/landing-page/public/all_videos`,
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            }),
+            providesTags: ['Backups'],
+        }),
         getBackup: builder.query({
             query: ({ token, id }: { token: string, id: any }) => ({
                 url: `management/backup/${id}`,
@@ -38,9 +48,30 @@ export const backupsApis = createApi({
             }),
             invalidatesTags: ['Backups'],
         }),
+        uploadVideo: builder.mutation({
+            query: ({ token, formData }) => ({
+                url: `/landing-page/upload-video`,
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData
+            }),
+            invalidatesTags: ['Backups'],
+        }),
         deleteBackup: builder.mutation({
             query: ({ token, id }: { token: string, id: number }) => ({
                 url: `management/backup/${id}`,
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }),
+            invalidatesTags: ['Backups'],
+        }),
+        deleteVideo: builder.mutation({
+            query: ({ token, id }: { token: string, id: number }) => ({
+                url: `/landing-page/delete-video/${id}`,
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -61,4 +92,4 @@ export const backupsApis = createApi({
     }),
 })
 
-export const { useGetAllBackupsQuery, useGetBackupQuery, useAddBackupMutation, useDeleteBackupMutation , useRestoreBackupMutation } = backupsApis
+export const { useGetAllBackupsQuery, useUploadVideoMutation, useGetAllVideosQuery, useDeleteVideoMutation, useGetBackupQuery, useAddBackupMutation, useDeleteBackupMutation , useRestoreBackupMutation } = backupsApis
